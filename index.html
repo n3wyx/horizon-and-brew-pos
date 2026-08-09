@@ -2277,180 +2277,222 @@ localStorage.setItem(
 
   function saveDrinkFromEditor() {
 
-    const name =
-      document
-        .getElementById("drinkNameInput")
-        .value
-        .trim();
+  const wasAdding = editingDrinkID === null;
 
+  const name =
+    document.getElementById("drinkNameInput").value.trim();
 
-    const price =
-      Number(
-        document
-          .getElementById("drinkPriceInput")
-          .value
-      );
+  const price =
+    Number(document.getElementById("drinkPriceInput").value);
 
+  const category =
+    document.getElementById("drinkCategoryInput").value.trim();
 
-    const category =
-      document
-        .getElementById("drinkCategoryInput")
-        .value
-        .trim();
+  const icon =
+    document.getElementById("drinkIconInput").value.trim();
 
+  if (!name) {
+    alert("Please enter a drink name.");
+    return;
+  }
 
-    const icon =
-      document
-        .getElementById("drinkIconInput")
-        .value
-        .trim();
+  if (!Number.isFinite(price) || price < 0) {
+    alert("Please enter a valid price.");
+    return;
+  }
 
+  if (!category) {
+    alert("Please enter a category.");
+    return;
+  }
 
-    if (!name) {
+  if (editingDrinkID === null) {
 
-      alert(
-        "Please enter a drink name."
-      );
+    posDrinks.push({
+      id: Date.now(),
+      name: name,
+      price: Math.round(price * 100) / 100,
+      category: category,
+      icon: icon || "🥤"
+    });
 
+  } else {
+
+    const drink = posDrinks.find(
+      item => item.id === editingDrinkID
+    );
+
+    if (!drink) {
+      alert("That drink could not be found.");
       return;
-
     }
 
+    drink.name = name;
+    drink.price = Math.round(price * 100) / 100;
+    drink.category = category;
+    drink.icon = icon || "🥤";
+  }
 
-    if (
-      Number.isNaN(price) ||
-      price < 0
-    ) {
+  localStorage.setItem(
+    "hb_pos_drinks",
+    JSON.stringify(posDrinks)
+  );
 
-      alert(
-        "Please enter a valid price."
-      );
+  closeDrinkEditor();
 
-      return;
+  renderMenu();
+  renderPOS();
 
-    }
+  alert(
+    wasAdding
+      ? "Drink added!"
+      : "Drink updated!"
+  );
 
+  editingDrinkID = null;
+}
 
-    if (!category) {
+  const nameInput =
+    document.getElementById("drinkNameInput");
 
-      alert(
-        "Please enter a category."
-      );
+  const priceInput =
+    document.getElementById("drinkPriceInput");
 
-      return;
+  const categoryInput =
+    document.getElementById("drinkCategoryInput");
 
-    }
-
-
-    if (editingDrinkID === null) {
-
-      /* ADD NEW DRINK */
-
-      const newID =
-        Date.now();
-
-
-      posDrinks.push({
-
-        id:newID,
-
-        name:name,
-
-        price:price,
-
-        category:category,
-
-        icon:icon || "🥤"
-
-      });
+  const iconInput =
+    document.getElementById("drinkIconInput");
 
 
-    } else {
+  if (!nameInput || !priceInput || !categoryInput || !iconInput) {
 
-      /* EDIT EXISTING DRINK */
+    alert("The drink editor could not be found.");
 
-      const drink =
-        posDrinks.find(
-          item =>
-            item.id === editingDrinkID
-        );
-
-
-      if (!drink) return;
-
-
-      drink.name =
-        name;
-
-
-      drink.price =
-        price;
-
-
-      drink.category =
-        category;
-
-
-      drink.icon =
-        icon || "🥤";
-
-    }
-
-
-    saveDrinks();
-
-
-    closeDrinkEditor();
-
-
-    renderMenu();
-
-
-    renderPOS();
-
-
+    return;
   }
 
 
-  /* ==========================================
-     DELETE DRINK
-  ========================================== */
+  const name =
+    nameInput.value.trim();
 
-  function deleteDrink(drinkID) {
+  const price =
+    Number(priceInput.value);
+
+  const category =
+    categoryInput.value.trim();
+
+  const icon =
+    iconInput.value.trim();
+
+
+  if (!name) {
+
+    alert("Please enter a drink name.");
+
+    return;
+  }
+
+
+  if (
+    !Number.isFinite(price) ||
+    price < 0
+  ) {
+
+    alert("Please enter a valid price.");
+
+    return;
+  }
+
+
+  if (!category) {
+
+    alert("Please enter a category.");
+
+    return;
+  }
+
+
+  if (editingDrinkID === null) {
+
+    // ADD NEW DRINK
+
+    posDrinks.push({
+
+      id: Date.now(),
+
+      name: name,
+
+      price: Math.round(price * 100) / 100,
+
+      category: category,
+
+      icon: icon || "🥤"
+
+    });
+
+  } else {
+
+    // EDIT EXISTING DRINK
 
     const drink =
       posDrinks.find(
-        item => item.id === drinkID
+        item =>
+          item.id === editingDrinkID
       );
 
 
-    if (!drink) return;
+    if (!drink) {
+
+      alert("That drink could not be found.");
+
+      return;
+    }
 
 
-    const confirmed =
-      confirm(
-        `Delete "${drink.name}" from the menu?`
-      );
+    drink.name = name;
 
+    drink.price =
+      Math.round(price * 100) / 100;
 
-    if (!confirmed) return;
+    drink.category = category;
 
-
-    posDrinks =
-      posDrinks.filter(
-        item => item.id !== drinkID
-      );
-
-
-    saveDrinks();
-
-
-    renderMenu();
-
-
-    renderPOS();
+    drink.icon =
+      icon || "🥤";
 
   }
+
+
+  // Save menu to this browser
+
+  localStorage.setItem(
+    "hb_pos_drinks",
+    JSON.stringify(posDrinks)
+  );
+
+
+  // Close editor
+
+  closeDrinkEditor();
+
+
+  // Refresh both screens
+
+  renderMenu();
+
+  renderPOS();
+
+
+  alert(
+    editingDrinkID === null
+      ? "Drink added!"
+      : "Drink updated!"
+  );
+
+
+  editingDrinkID = null;
+
+}
 
 
   /* ==========================================
