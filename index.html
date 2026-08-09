@@ -1497,7 +1497,824 @@
         Customize your drinks.
       </p>
 
-      <div id="menuContent"></div>
+      <div class="menu-editor">
+
+  <div class="menu-editor-header">
+    <div>
+      <h2>Drink Menu</h2>
+      <p>Customize everything that appears on your POS.</p>
+    </div>
+
+    <button class="add-drink-button" onclick="openDrinkEditor()">
+      ＋ Add Drink
+    </button>
+  </div>
+
+  <div id="menuDrinkList"></div>
+
+</div>
+
+
+<style>
+  .menu-editor-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+  }
+
+  .menu-editor-header h2 {
+    margin:0;
+  }
+
+  .menu-editor-header p {
+    margin:6px 0 0;
+    color:var(--muted);
+  }
+
+  .add-drink-button {
+    background:var(--accent);
+    color:var(--accent-text);
+    border:0;
+    border-radius:var(--radius);
+    padding:13px 18px;
+    font-weight:bold;
+    font-size:15px;
+  }
+
+  .menu-drink-list {
+    display:grid;
+    gap:12px;
+  }
+
+  .menu-drink-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+  }
+
+  .menu-drink-info {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    min-width:0;
+  }
+
+  .menu-drink-icon {
+    width:55px;
+    height:55px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:var(--surface-2);
+    border-radius:12px;
+
+    font-size:28px;
+    flex-shrink:0;
+  }
+
+  .menu-drink-name {
+    font-size:17px;
+    font-weight:bold;
+  }
+
+  .menu-drink-details {
+    color:var(--muted);
+    font-size:13px;
+    margin-top:5px;
+  }
+
+  .menu-drink-actions {
+    display:flex;
+    gap:8px;
+  }
+
+  .menu-action-button {
+    padding:10px 13px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:var(--surface-2);
+    color:var(--text);
+  }
+
+  .menu-action-button:hover {
+    background:var(--accent);
+    color:var(--accent-text);
+  }
+
+  .menu-delete-button:hover {
+    background:#ff5555;
+    color:white;
+  }
+
+
+  /* EDITOR POPUP */
+
+  .drink-editor-overlay {
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.72);
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    z-index:9999;
+  }
+
+  .drink-editor-overlay.show {
+    display:flex;
+  }
+
+  .drink-editor {
+    width:min(500px,100%);
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    padding:24px;
+
+    box-shadow:0 25px 80px rgba(0,0,0,.6);
+  }
+
+  .drink-editor h2 {
+    margin:0 0 20px;
+  }
+
+  .editor-field {
+    margin-bottom:15px;
+  }
+
+  .editor-field label {
+    display:block;
+    margin-bottom:7px;
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  .editor-field input,
+  .editor-field select {
+    width:100%;
+
+    padding:13px;
+
+    background:var(--surface-2);
+    color:var(--text);
+
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+
+    outline:none;
+  }
+
+  .editor-field input:focus,
+  .editor-field select:focus {
+    border-color:var(--text);
+  }
+
+  .editor-buttons {
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+  }
+
+  .editor-buttons button {
+    flex:1;
+    padding:13px;
+
+    border-radius:var(--radius);
+
+    font-weight:bold;
+  }
+
+  .cancel-editor {
+    background:var(--surface-2);
+    color:var(--text);
+    border:1px solid var(--border);
+  }
+
+  .save-editor {
+    background:var(--accent);
+    color:var(--accent-text);
+    border:0;
+  }
+
+
+  @media(max-width:650px) {
+
+    .menu-editor-header {
+      flex-direction:column;
+      align-items:stretch;
+    }
+
+    .add-drink-button {
+      width:100%;
+    }
+
+    .menu-drink-card {
+      align-items:flex-start;
+      flex-direction:column;
+    }
+
+    .menu-drink-actions {
+      width:100%;
+    }
+
+    .menu-action-button {
+      flex:1;
+    }
+
+  }
+</style>
+
+
+<!-- EDIT DRINK WINDOW -->
+
+<div
+  id="drinkEditorOverlay"
+  class="drink-editor-overlay"
+>
+
+  <div class="drink-editor">
+
+    <h2 id="drinkEditorTitle">
+      Add Drink
+    </h2>
+
+
+    <div class="editor-field">
+
+      <label>
+        Drink Name
+      </label>
+
+      <input
+        id="drinkNameInput"
+        type="text"
+        placeholder="Example: Galaxy Lemonade"
+      >
+
+    </div>
+
+
+    <div class="editor-field">
+
+      <label>
+        Price
+      </label>
+
+      <input
+        id="drinkPriceInput"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="4.50"
+      >
+
+    </div>
+
+
+    <div class="editor-field">
+
+      <label>
+        Category
+      </label>
+
+      <input
+        id="drinkCategoryInput"
+        type="text"
+        placeholder="Refreshers"
+      >
+
+    </div>
+
+
+    <div class="editor-field">
+
+      <label>
+        Icon / Emoji
+      </label>
+
+      <input
+        id="drinkIconInput"
+        type="text"
+        maxlength="4"
+        placeholder="🥤"
+      >
+
+    </div>
+
+
+    <div class="editor-buttons">
+
+      <button
+        class="cancel-editor"
+        onclick="closeDrinkEditor()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="save-editor"
+        onclick="saveDrinkFromEditor()"
+      >
+        Save Drink
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  /* ==========================================
+     MENU EDITOR
+  ========================================== */
+
+  let editingDrinkID = null;
+
+
+  function renderMenu() {
+
+    const container =
+      document.getElementById("menuDrinkList");
+
+    if (!container) return;
+
+
+    container.innerHTML = "";
+
+
+    if (posDrinks.length === 0) {
+
+      container.innerHTML = `
+
+        <div style="
+          padding:40px;
+          text-align:center;
+          color:var(--muted);
+          background:var(--surface);
+          border:1px solid var(--border);
+          border-radius:var(--radius);
+        ">
+
+          <div style="
+            font-size:40px;
+            margin-bottom:10px;
+          ">
+            🥤
+          </div>
+
+          No drinks yet.
+
+          <br>
+
+          Click <strong>Add Drink</strong>
+          to create your first drink.
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    const list =
+      document.createElement("div");
+
+    list.className =
+      "menu-drink-list";
+
+
+    posDrinks.forEach(drink => {
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "menu-drink-card";
+
+
+      card.innerHTML = `
+
+        <div class="menu-drink-info">
+
+          <div class="menu-drink-icon">
+            ${escapeHTML(drink.icon)}
+          </div>
+
+          <div>
+
+            <div class="menu-drink-name">
+              ${escapeHTML(drink.name)}
+            </div>
+
+            <div class="menu-drink-details">
+
+              $${Number(drink.price).toFixed(2)}
+              ·
+              ${escapeHTML(drink.category)}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="menu-drink-actions">
+
+          <button
+            class="menu-action-button"
+            onclick="
+              openDrinkEditor(${drink.id})
+            "
+          >
+            ✏️ Edit
+          </button>
+
+
+          <button
+            class="menu-action-button menu-delete-button"
+            onclick="
+              deleteDrink(${drink.id})
+            "
+          >
+            🗑️ Delete
+          </button>
+
+        </div>
+
+      `;
+
+
+      list.appendChild(card);
+
+    });
+
+
+    container.appendChild(list);
+
+  }
+
+
+  /* ==========================================
+     OPEN EDITOR
+  ========================================== */
+
+  function openDrinkEditor(drinkID = null) {
+
+    editingDrinkID = drinkID;
+
+
+    const overlay =
+      document.getElementById(
+        "drinkEditorOverlay"
+      );
+
+
+    const title =
+      document.getElementById(
+        "drinkEditorTitle"
+      );
+
+
+    if (drinkID === null) {
+
+      title.textContent =
+        "Add Drink";
+
+
+      document.getElementById(
+        "drinkNameInput"
+      ).value = "";
+
+
+      document.getElementById(
+        "drinkPriceInput"
+      ).value = "";
+
+
+      document.getElementById(
+        "drinkCategoryInput"
+      ).value = "";
+
+
+      document.getElementById(
+        "drinkIconInput"
+      ).value = "🥤";
+
+
+    } else {
+
+      const drink =
+        posDrinks.find(
+          item => item.id === drinkID
+        );
+
+
+      if (!drink) return;
+
+
+      title.textContent =
+        "Edit Drink";
+
+
+      document.getElementById(
+        "drinkNameInput"
+      ).value =
+        drink.name;
+
+
+      document.getElementById(
+        "drinkPriceInput"
+      ).value =
+        drink.price;
+
+
+      document.getElementById(
+        "drinkCategoryInput"
+      ).value =
+        drink.category;
+
+
+      document.getElementById(
+        "drinkIconInput"
+      ).value =
+        drink.icon;
+
+    }
+
+
+    overlay.classList.add("show");
+
+  }
+
+
+  /* ==========================================
+     CLOSE EDITOR
+  ========================================== */
+
+  function closeDrinkEditor() {
+
+    document
+      .getElementById(
+        "drinkEditorOverlay"
+      )
+      .classList.remove("show");
+
+    editingDrinkID = null;
+
+  }
+
+
+  /* ==========================================
+     SAVE DRINK
+  ========================================== */
+
+  function saveDrinkFromEditor() {
+
+    const name =
+      document
+        .getElementById("drinkNameInput")
+        .value
+        .trim();
+
+
+    const price =
+      Number(
+        document
+          .getElementById("drinkPriceInput")
+          .value
+      );
+
+
+    const category =
+      document
+        .getElementById("drinkCategoryInput")
+        .value
+        .trim();
+
+
+    const icon =
+      document
+        .getElementById("drinkIconInput")
+        .value
+        .trim();
+
+
+    if (!name) {
+
+      alert(
+        "Please enter a drink name."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      Number.isNaN(price) ||
+      price < 0
+    ) {
+
+      alert(
+        "Please enter a valid price."
+      );
+
+      return;
+
+    }
+
+
+    if (!category) {
+
+      alert(
+        "Please enter a category."
+      );
+
+      return;
+
+    }
+
+
+    if (editingDrinkID === null) {
+
+      /* ADD NEW DRINK */
+
+      const newID =
+        Date.now();
+
+
+      posDrinks.push({
+
+        id:newID,
+
+        name:name,
+
+        price:price,
+
+        category:category,
+
+        icon:icon || "🥤"
+
+      });
+
+
+    } else {
+
+      /* EDIT EXISTING DRINK */
+
+      const drink =
+        posDrinks.find(
+          item =>
+            item.id === editingDrinkID
+        );
+
+
+      if (!drink) return;
+
+
+      drink.name =
+        name;
+
+
+      drink.price =
+        price;
+
+
+      drink.category =
+        category;
+
+
+      drink.icon =
+        icon || "🥤";
+
+    }
+
+
+    saveDrinks();
+
+
+    closeDrinkEditor();
+
+
+    renderMenu();
+
+
+    renderPOS();
+
+
+  }
+
+
+  /* ==========================================
+     DELETE DRINK
+  ========================================== */
+
+  function deleteDrink(drinkID) {
+
+    const drink =
+      posDrinks.find(
+        item => item.id === drinkID
+      );
+
+
+    if (!drink) return;
+
+
+    const confirmed =
+      confirm(
+        `Delete "${drink.name}" from the menu?`
+      );
+
+
+    if (!confirmed) return;
+
+
+    posDrinks =
+      posDrinks.filter(
+        item => item.id !== drinkID
+      );
+
+
+    saveDrinks();
+
+
+    renderMenu();
+
+
+    renderPOS();
+
+  }
+
+
+  /* ==========================================
+     SAVE DRINKS
+  ========================================== */
+
+  function saveDrinks() {
+
+    localStorage.setItem(
+      "hb_pos_drinks",
+      JSON.stringify(posDrinks)
+    );
+
+  }
+
+
+  /* ==========================================
+     MENU NAVIGATION
+  ========================================== */
+
+  const originalShowPage =
+    showPage;
+
+
+  showPage = function(pageID, button) {
+
+    originalShowPage(
+      pageID,
+      button
+    );
+
+
+    if (pageID === "menu") {
+
+      renderMenu();
+
+    }
+
+  };
+
+
+  /* ==========================================
+     INITIAL MENU RENDER
+  ========================================== */
+
+  renderMenu();
+
+</script>
 
     </main>
 
