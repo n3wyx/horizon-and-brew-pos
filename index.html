@@ -1419,7 +1419,56 @@
       oldSales + total
     ).toFixed(2)
   );
+localStorage.setItem(
+  "hb_sales_" + getTodayKey(),
+  (
+    Number(
+      localStorage.getItem(
+        "hb_sales_" + getTodayKey()
+      )
+    ) || 0
+  ) + total
+);
 
+localStorage.setItem(
+  "hb_sales_" + getWeekKey(),
+  (
+    Number(
+      localStorage.getItem(
+        "hb_sales_" + getWeekKey()
+      )
+    ) || 0
+  ) + total
+);
+
+localStorage.setItem(
+  "hb_orders",
+  (
+    Number(
+      localStorage.getItem(
+        "hb_orders"
+      )
+    ) || 0
+  ) + 1
+);
+
+const drinksSoldThisOrder =
+  posOrder.reduce(
+    (sum, item) =>
+      sum + Number(item.quantity),
+    0
+  );
+
+localStorage.setItem(
+  "hb_drinks_sold",
+  (
+    Number(
+      localStorage.getItem(
+        "hb_drinks_sold"
+      )
+    ) || 0
+  ) + drinksSoldThisOrder
+);
 
   /* SAVE ORDER NUMBER */
 
@@ -2469,7 +2518,840 @@
         Track your sales goals.
       </p>
 
-      <div id="goalsContent"></div>
+     <div class="goals-dashboard">
+
+  <div class="goal-card">
+
+    <div class="goal-card-header">
+      <div>
+        <div class="goal-label">DAILY SALES</div>
+        <div class="goal-amount" id="dailySalesDisplay">$0.00</div>
+      </div>
+
+      <div class="goal-icon">🎯</div>
+    </div>
+
+    <div class="progress-track">
+      <div
+        id="dailyProgress"
+        class="progress-fill"
+        style="width:0%"
+      ></div>
+    </div>
+
+    <div class="goal-footer">
+      <span id="dailyProgressText">
+        $0.00 / $500.00
+      </span>
+
+      <span id="dailyPercent">
+        0%
+      </span>
+    </div>
+
+  </div>
+
+
+  <div class="goal-card">
+
+    <div class="goal-card-header">
+      <div>
+        <div class="goal-label">WEEKLY SALES</div>
+        <div class="goal-amount" id="weeklySalesDisplay">$0.00</div>
+      </div>
+
+      <div class="goal-icon">📅</div>
+    </div>
+
+    <div class="progress-track">
+      <div
+        id="weeklyProgress"
+        class="progress-fill"
+        style="width:0%"
+      ></div>
+    </div>
+
+    <div class="goal-footer">
+      <span id="weeklyProgressText">
+        $0.00 / $2,500.00
+      </span>
+
+      <span id="weeklyPercent">
+        0%
+      </span>
+    </div>
+
+  </div>
+
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+
+      <div class="stat-icon">🧾</div>
+
+      <div>
+        <div class="stat-label">
+          ORDERS
+        </div>
+
+        <div
+          id="goalOrders"
+          class="stat-number"
+        >
+          0
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">🥤</div>
+
+      <div>
+        <div class="stat-label">
+          DRINKS SOLD
+        </div>
+
+        <div
+          id="goalDrinks"
+          class="stat-number"
+        >
+          0
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">💵</div>
+
+      <div>
+        <div class="stat-label">
+          TOTAL SALES
+        </div>
+
+        <div
+          id="goalTotalSales"
+          class="stat-number"
+        >
+          $0.00
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="goal-settings-card">
+
+    <h2>Goal Settings</h2>
+
+    <p>
+      Set the sales targets you want Horizon & Brew
+      to work toward.
+    </p>
+
+
+    <div class="goal-input-grid">
+
+      <div class="goal-input">
+
+        <label>
+          Daily Goal
+        </label>
+
+        <div class="money-input">
+
+          <span>$</span>
+
+          <input
+            id="dailyGoalInput"
+            type="number"
+            min="0"
+            step="1"
+            value="500"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="goal-input">
+
+        <label>
+          Weekly Goal
+        </label>
+
+        <div class="money-input">
+
+          <span>$</span>
+
+          <input
+            id="weeklyGoalInput"
+            type="number"
+            min="0"
+            step="1"
+            value="2500"
+          >
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <button
+      class="save-goals-button"
+      onclick="saveGoals()"
+    >
+      💾 Save Goals
+    </button>
+
+  </div>
+
+</div>
+
+
+<style>
+
+  .goals-dashboard {
+    display:grid;
+    gap:20px;
+  }
+
+
+  .goal-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+
+
+  .goal-card-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+  }
+
+
+  .goal-label {
+    color:var(--muted);
+    font-size:12px;
+    letter-spacing:1.5px;
+    font-weight:bold;
+  }
+
+
+  .goal-amount {
+    margin-top:6px;
+    font-size:30px;
+    font-weight:bold;
+  }
+
+
+  .goal-icon {
+    font-size:34px;
+  }
+
+
+  .progress-track {
+    height:18px;
+    margin-top:22px;
+
+    background:var(--surface-2);
+
+    border-radius:999px;
+
+    overflow:hidden;
+  }
+
+
+  .progress-fill {
+    height:100%;
+
+    background:var(--accent);
+
+    border-radius:999px;
+
+    transition:
+      width .35s ease;
+  }
+
+
+  .goal-footer {
+    display:flex;
+    justify-content:space-between;
+
+    margin-top:10px;
+
+    color:var(--muted);
+    font-size:13px;
+  }
+
+
+  .stats-grid {
+    display:grid;
+
+    grid-template-columns:
+      repeat(3,1fr);
+
+    gap:15px;
+  }
+
+
+  .stat-card {
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+  }
+
+
+  .stat-icon {
+    font-size:30px;
+  }
+
+
+  .stat-label {
+    color:var(--muted);
+
+    font-size:11px;
+
+    letter-spacing:1px;
+
+    font-weight:bold;
+  }
+
+
+  .stat-number {
+    margin-top:5px;
+
+    font-size:23px;
+
+    font-weight:bold;
+  }
+
+
+  .goal-settings-card {
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:22px;
+  }
+
+
+  .goal-settings-card h2 {
+    margin:0;
+  }
+
+
+  .goal-settings-card p {
+    color:var(--muted);
+
+    margin-top:6px;
+  }
+
+
+  .goal-input-grid {
+    display:grid;
+
+    grid-template-columns:
+      repeat(2,1fr);
+
+    gap:15px;
+
+    margin-top:20px;
+  }
+
+
+  .goal-input label {
+    display:block;
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    margin-bottom:7px;
+  }
+
+
+  .money-input {
+    display:flex;
+
+    align-items:center;
+
+    background:var(--surface-2);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    overflow:hidden;
+  }
+
+
+  .money-input span {
+    padding-left:13px;
+
+    color:var(--muted);
+  }
+
+
+  .money-input input {
+    width:100%;
+
+    padding:13px;
+
+    border:0;
+
+    outline:none;
+
+    background:transparent;
+
+    color:var(--text);
+
+    font-size:16px;
+  }
+
+
+  .save-goals-button {
+    margin-top:18px;
+
+    padding:13px 18px;
+
+    border:0;
+
+    border-radius:var(--radius);
+
+    background:var(--accent);
+
+    color:var(--accent-text);
+
+    font-weight:bold;
+
+    cursor:pointer;
+  }
+
+
+  @media(max-width:700px) {
+
+    .stats-grid {
+      grid-template-columns:1fr;
+    }
+
+    .goal-input-grid {
+      grid-template-columns:1fr;
+    }
+
+  }
+
+</style>
+
+
+<script>
+
+  /* ==========================================
+     GOALS
+  ========================================== */
+
+  let dailyGoal =
+    Number(
+      localStorage.getItem(
+        "hb_daily_goal"
+      )
+    ) || 500;
+
+
+  let weeklyGoal =
+    Number(
+      localStorage.getItem(
+        "hb_weekly_goal"
+      )
+    ) || 2500;
+
+
+  function saveGoals() {
+
+    const daily =
+      Number(
+        document.getElementById(
+          "dailyGoalInput"
+        ).value
+      );
+
+
+    const weekly =
+      Number(
+        document.getElementById(
+          "weeklyGoalInput"
+        ).value
+      );
+
+
+    if (
+      Number.isNaN(daily) ||
+      daily < 0
+    ) {
+
+      alert(
+        "Please enter a valid daily goal."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      Number.isNaN(weekly) ||
+      weekly < 0
+    ) {
+
+      alert(
+        "Please enter a valid weekly goal."
+      );
+
+      return;
+
+    }
+
+
+    dailyGoal = daily;
+
+    weeklyGoal = weekly;
+
+
+    localStorage.setItem(
+      "hb_daily_goal",
+      dailyGoal
+    );
+
+
+    localStorage.setItem(
+      "hb_weekly_goal",
+      weeklyGoal
+    );
+
+
+    renderGoals();
+
+
+    alert(
+      "Goals saved!"
+    );
+
+  }
+
+
+  function getTodayKey() {
+
+    const date =
+      new Date();
+
+    return (
+      date.getFullYear() +
+      "-" +
+      String(
+        date.getMonth() + 1
+      ).padStart(2,"0") +
+      "-" +
+      String(
+        date.getDate()
+      ).padStart(2,"0")
+    );
+
+  }
+
+
+  function getWeekKey() {
+
+    const date =
+      new Date();
+
+    const first =
+      new Date(
+        date.getFullYear(),
+        0,
+        1
+      );
+
+
+    const day =
+      Math.floor(
+        (
+          date - first
+        ) /
+        86400000
+      );
+
+
+    const week =
+      Math.ceil(
+        (day + first.getDay() + 1) / 7
+      );
+
+
+    return (
+      date.getFullYear() +
+      "-W" +
+      week
+    );
+
+  }
+
+
+  function renderGoals() {
+
+    const dailyInput =
+      document.getElementById(
+        "dailyGoalInput"
+      );
+
+
+    const weeklyInput =
+      document.getElementById(
+        "weeklyGoalInput"
+      );
+
+
+    if (dailyInput) {
+
+      dailyInput.value =
+        dailyGoal;
+
+    }
+
+
+    if (weeklyInput) {
+
+      weeklyInput.value =
+        weeklyGoal;
+
+    }
+
+
+    const sales =
+      Number(
+        localStorage.getItem(
+          "hb_sales"
+        )
+      ) || 0;
+
+
+    const dailySales =
+      Number(
+        localStorage.getItem(
+          "hb_sales_" +
+          getTodayKey()
+        )
+      ) || 0;
+
+
+    const weeklySales =
+      Number(
+        localStorage.getItem(
+          "hb_sales_" +
+          getWeekKey()
+        )
+      ) || 0;
+
+
+    const orders =
+      Number(
+        localStorage.getItem(
+          "hb_orders"
+        )
+      ) || 0;
+
+
+    const drinks =
+      Number(
+        localStorage.getItem(
+          "hb_drinks_sold"
+        )
+      ) || 0;
+
+
+    updateGoalDisplay(
+      "dailySalesDisplay",
+      dailySales
+    );
+
+
+    updateGoalDisplay(
+      "weeklySalesDisplay",
+      weeklySales
+    );
+
+
+    updateGoalProgress(
+      "daily",
+      dailySales,
+      dailyGoal
+    );
+
+
+    updateGoalProgress(
+      "weekly",
+      weeklySales,
+      weeklyGoal
+    );
+
+
+    document.getElementById(
+      "goalOrders"
+    ).textContent =
+      orders;
+
+
+    document.getElementById(
+      "goalDrinks"
+    ).textContent =
+      drinks;
+
+
+    document.getElementById(
+      "goalTotalSales"
+    ).textContent =
+      "$" + sales.toFixed(2);
+
+  }
+
+
+  function updateGoalDisplay(
+    elementID,
+    amount
+  ) {
+
+    const element =
+      document.getElementById(
+        elementID
+      );
+
+
+    if (!element) return;
+
+
+    element.textContent =
+      "$" +
+      amount.toFixed(2);
+
+  }
+
+
+  function updateGoalProgress(
+    type,
+    current,
+    goal
+  ) {
+
+    const safeGoal =
+      Number(goal) || 0;
+
+
+    let percent =
+      safeGoal > 0
+        ? (current / safeGoal) * 100
+        : 0;
+
+
+    const bar =
+      document.getElementById(
+        type + "Progress"
+      );
+
+
+    const text =
+      document.getElementById(
+        type + "ProgressText"
+      );
+
+
+    const percentText =
+      document.getElementById(
+        type + "Percent"
+      );
+
+
+    if (!bar) return;
+
+
+    bar.style.width =
+      Math.min(
+        percent,
+        100
+      ) + "%";
+
+
+    text.textContent =
+      "$" +
+      current.toFixed(2) +
+      " / $" +
+      safeGoal.toFixed(2);
+
+
+    percentText.textContent =
+      Math.round(percent) +
+      "%";
+
+  }
+
+
+  /* ==========================================
+     MAKE GOALS UPDATE WHEN PAGE OPENS
+  ========================================== */
+
+  const oldShowPageForGoals =
+    showPage;
+
+
+  showPage = function(
+    pageID,
+    button
+  ) {
+
+    oldShowPageForGoals(
+      pageID,
+      button
+    );
+
+
+    if (
+      pageID === "goals"
+    ) {
+
+      renderGoals();
+
+    }
+
+  };
+
+
+  renderGoals();
+
+</script>
 
     </main>
 
