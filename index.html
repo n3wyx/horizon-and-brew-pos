@@ -1,675 +1,2816 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Horizon & Brew POS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizon & Brew POS</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #050505;
-      color: white;
-    }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #050505;
+  color: #fff;
+}
 
-    .app {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+button,
+input,
+select {
+  font: inherit;
+}
 
-    /* HEADER */
-    header {
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      border-bottom: 1px solid #2a2a2a;
-      background: #080808;
-    }
+button {
+  cursor: pointer;
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-    .logo {
-      width: 45px;
-      height: 45px;
-      border: 2px solid white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 21px;
-    }
+/* HEADER */
 
-    .brand h1 {
-      margin: 0;
-      font-size: 21px;
-      letter-spacing: 3px;
-    }
+header {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #292929;
+  background: #080808;
+}
 
-    .status {
-      color: #aaa;
-      font-size: 14px;
-    }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-    /* MAIN */
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 390px;
-      min-height: calc(100vh - 80px);
-    }
+.logo {
+  width: 42px;
+  height: 42px;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
 
-    .menu {
-      padding: 28px;
-      overflow-y: auto;
-    }
+.brand-name {
+  font-weight: 700;
+  letter-spacing: 2px;
+}
 
-    .menu-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 22px;
-    }
+.register {
+  color: #aaa;
+  font-size: 13px;
+}
 
-    .menu-top h2 {
-      margin: 0;
-      font-size: 28px;
-    }
+/* NAV */
 
-    .search {
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 12px 15px;
-      color: white;
-      width: 230px;
-      outline: none;
-    }
+.nav {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #292929;
+  background: #090909;
+}
 
-    .categories {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-    }
+.nav button {
+  background: transparent;
+  color: #aaa;
+  border: 0;
+  padding: 11px 18px;
+  border-radius: 8px;
+}
 
-    .category {
-      background: #111;
-      border: 1px solid #333;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
+.nav button:hover,
+.nav button.active {
+  background: white;
+  color: black;
+}
 
-    .category.active,
-    .category:hover {
-      background: white;
-      color: black;
-    }
+/* PAGE */
 
-    /* DRINK GRID */
-    .drinks {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 16px;
-    }
+.page {
+  padding: 22px;
+  flex: 1;
+}
 
-    .drink {
-      background: #0d0d0d;
-      border: 1px solid #292929;
-      border-radius: 16px;
-      padding: 20px;
-      min-height: 170px;
-      cursor: pointer;
-      transition: 0.15s;
-    }
+/* DASHBOARD */
 
-    .drink:hover {
-      transform: translateY(-3px);
-      border-color: white;
-      background: #151515;
-    }
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 18px;
+}
 
-    .drink-icon {
-      font-size: 42px;
-      margin-bottom: 18px;
-    }
+.goal-card {
+  background: #0e0e0e;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
 
-    .drink h3 {
-      margin: 0 0 8px;
-      font-size: 17px;
-    }
+.goal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .drink p {
-      margin: 0;
-      color: #999;
-      font-size: 13px;
-    }
+.goal-title {
+  font-size: 14px;
+  color: #aaa;
+}
 
-    .price {
-      margin-top: 14px;
-      font-size: 17px;
-      font-weight: bold;
-    }
+.goal-number {
+  font-size: 25px;
+  font-weight: bold;
+}
 
-    /* CART */
-    .cart {
-      background: #0b0b0b;
-      border-left: 1px solid #292929;
-      display: flex;
-      flex-direction: column;
-    }
+.goal-edit {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #333;
+  border-radius: 7px;
+  padding: 7px 10px;
+}
 
-    .cart-header {
-      padding: 25px;
-      border-bottom: 1px solid #292929;
-    }
+.goal-edit:hover {
+  color: white;
+  border-color: white;
+}
 
-    .cart-header h2 {
-      margin: 0;
-    }
+.progress {
+  height: 12px;
+  background: #222;
+  border-radius: 20px;
+  margin-top: 15px;
+  overflow: hidden;
+}
 
-    .order-number {
-      color: #888;
-      font-size: 13px;
-      margin-top: 5px;
-    }
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: white;
+  transition: width .3s;
+}
 
-    .cart-items {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
+.goal-message {
+  margin-top: 10px;
+  color: #999;
+  font-size: 13px;
+}
 
-    .empty {
-      text-align: center;
-      color: #666;
-      margin-top: 70px;
-    }
+/* MENU */
 
-    .cart-item {
-      border-bottom: 1px solid #222;
-      padding: 14px 0;
-    }
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
 
-    .item-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
+.menu-header h2 {
+  margin: 0;
+}
 
-    .item-name {
-      font-weight: bold;
-    }
+.search {
+  width: 230px;
+  padding: 12px;
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 9px;
+}
 
-    .item-price {
-      color: #ccc;
-    }
+.categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
 
-    .quantity {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
+.category {
+  background: #111;
+  color: #aaa;
+  border: 1px solid #333;
+  padding: 10px 15px;
+  border-radius: 20px;
+}
 
-    .quantity button {
-      width: 28px;
-      height: 28px;
-      border: 1px solid #444;
-      background: #161616;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+.category.active,
+.category:hover {
+  background: white;
+  color: black;
+}
 
-    .quantity button:hover {
-      background: white;
-      color: black;
-    }
+.drinks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
 
-    .cart-bottom {
-      padding: 22px;
-      border-top: 1px solid #292929;
-    }
+.drink {
+  background: #0e0e0e;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 155px;
+  transition: .15s;
+}
 
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      color: #aaa;
-    }
+.drink:hover {
+  border-color: white;
+  transform: translateY(-2px);
+}
 
-    .total {
-      color: white;
-      font-size: 24px;
-      font-weight: bold;
-      margin: 15px 0 20px;
-    }
+.drink-icon {
+  font-size: 35px;
+  margin-bottom: 12px;
+}
 
-    .checkout {
-      width: 100%;
-      padding: 17px;
-      border: none;
-      border-radius: 10px;
-      background: white;
-      color: black;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.drink-name {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
 
-    .checkout:hover {
-      background: #ddd;
-    }
+.drink-category {
+  color: #777;
+  font-size: 12px;
+}
 
-    .clear {
-      width: 100%;
-      margin-top: 10px;
-      padding: 12px;
-      background: transparent;
-      border: 1px solid #333;
-      color: #aaa;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+.drink-price {
+  margin-top: 12px;
+  font-weight: bold;
+}
 
-    @media (max-width: 850px) {
-      main {
-        grid-template-columns: 1fr;
-      }
+.drink-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
 
-      .cart {
-        border-left: none;
-        border-top: 1px solid #292929;
-        min-height: 400px;
-      }
+.small-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 7px;
+  border: 1px solid #333;
+  background: #151515;
+  color: white;
+}
 
-      .menu-top {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-      }
+.small-btn:hover {
+  background: white;
+  color: black;
+}
 
-      .search {
-        width: 100%;
-      }
-    }
-  </style>
+/* CART */
+
+.cart {
+  background: #0b0b0b;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  padding: 20px;
+  border-bottom: 1px solid #292929;
+}
+
+.cart-header h2 {
+  margin: 0;
+}
+
+.cart-items {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.empty {
+  text-align: center;
+  color: #666;
+  margin-top: 60px;
+}
+
+.cart-item {
+  padding: 13px 0;
+  border-bottom: 1px solid #222;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.quantity button {
+  width: 30px;
+  height: 30px;
+  background: #171717;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 6px;
+}
+
+.cart-bottom {
+  padding: 18px;
+  border-top: 1px solid #292929;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  color: #aaa;
+  margin-bottom: 9px;
+}
+
+.total {
+  color: white;
+  font-size: 23px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.charge {
+  width: 100%;
+  padding: 16px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.clear {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  background: transparent;
+  color: #999;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+/* EDITOR */
+
+.editor {
+  max-width: 900px;
+}
+
+.editor-box {
+  background: #0e0e0e;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  color: #999;
+  font-size: 13px;
+}
+
+.field input,
+.field select {
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.add-btn {
+  margin-top: 15px;
+  padding: 12px 18px;
+  background: white;
+  color: black;
+  border: 0;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.settings-btn {
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+/* HIDDEN */
+
+.hidden {
+  display: none;
+}
+
+/* MOBILE / IPAD */
+
+@media (max-width: 950px) {
+
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .cart {
+    min-height: 450px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  header {
+    padding: 0 12px;
+  }
+
+  .brand-name {
+    font-size: 13px;
+  }
+
+  .nav {
+    overflow-x: auto;
+  }
+
+  .menu-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <header>
-    <div class="brand">
-      <div class="logo">✦</div>
-      <h1>HORIZON & BREW</h1>
-    </div>
+<header>
+  <div class="brand">
+    <div class="logo">✦</div>
+    <div class="brand-name">HORIZON & BREW</div>
+  </div>
 
-    <div class="status">
-      ● REGISTER OPEN
-    </div>
-  </header>
+  <div class="register">
+    ● REGISTER OPEN
+  </div>
+</header>
 
-  <main>
+<nav class="nav">
 
-    <!-- MENU -->
-    <section class="menu">
+  <button class="active" onclick="showPage('pos', this)">
+    POS
+  </button>
 
-      <div class="menu-top">
-        <h2>Menu</h2>
+  <button onclick="showPage('menu', this)">
+    Menu
+  </button>
 
-        <input
-          class="search"
-          id="search"
-          placeholder="Search drinks..."
-          oninput="searchDrinks()"
-        >
-      </div>
+  <button onclick="showPage('goals', this)">
+    Goals
+  </button>
 
-      <div class="categories">
-        <button class="category active" onclick="filterCategory('all', this)">All</button>
-        <button class="category" onclick="filterCategory('refreshers', this)">Refreshers</button>
-        <button class="category" onclick="filterCategory('soda', this)">Soda</button>
-        <button class="category" onclick="filterCategory('tea', this)">Tea</button>
-        <button class="category" onclick="filterCategory('special', this)">Specials</button>
-      </div>
+</nav>
 
-      <div class="drinks" id="drinks"></div>
+<!-- POS PAGE -->
 
-    </section>
+<section id="pos" class="page">
 
-    <!-- CART -->
-    <aside class="cart">
+<div class="dashboard">
 
-      <div class="cart-header">
-        <h2>Current Order</h2>
-        <div class="order-number" id="orderNumber"></div>
-      </div>
+<div>
 
-      <div class="cart-items" id="cartItems">
-        <div class="empty">
-          No drinks added yet.<br><br>
-          Tap a drink to start an order.
-        </div>
-      </div>
+<div class="goal-card">
 
-      <div class="cart-bottom">
+<div class="goal-top">
 
-        <div class="total-row">
-          <span>Subtotal</span>
-          <span id="subtotal">$0.00</span>
-        </div>
+<div>
+<div class="goal-title">TODAY'S SALES GOAL</div>
+<div class="goal-number" id="goalText">$0 / $500</div>
+</div>
 
-        <div class="total-row">
-          <span>Tax</span>
-          <span id="tax">$0.00</span>
-        </div>
+<button class="goal-edit" onclick="changeGoal()">
+Edit Goal
+</button>
 
-        <div class="total-row total">
-          <span>Total</span>
-          <span id="total">$0.00</span>
-        </div>
+</div>
 
-        <button class="checkout" onclick="checkout()">
-          Complete Sale
-        </button>
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
 
-        <button class="clear" onclick="clearCart()">
-          Clear Order
-        </button>
+<div class="goal-message" id="goalMessage">
+$500 remaining
+</div>
 
-      </div>
+</div>
 
-    </aside>
+<div class="menu-header">
 
-  </main>
+<h2>Drinks</h2>
+
+<input
+id="search"
+class="search"
+placeholder="Search drinks..."
+oninput="renderDrinks()"
+>
+
+</div>
+
+<div class="categories">
+
+<button class="category active" onclick="setCategory('all',this)">
+All
+</button>
+
+<button class="category" onclick="setCategory('refreshers',this)">
+Refreshers
+</button>
+
+<button class="category" onclick="setCategory('soda',this)">
+Soda
+</button>
+
+<button class="category" onclick="setCategory('tea',this)">
+Tea
+</button>
+
+<button class="category" onclick="setCategory('special',this)">
+Specials
+</button>
+
+</div>
+
+<div class="drinks" id="drinks"></div>
+
+</div>
+
+<!-- CART -->
+
+<aside class="cart">
+
+<div class="cart-header">
+<h2>Current Order</h2>
+</div>
+
+<div class="cart-items" id="cartItems">
+
+<div class="empty">
+No drinks added.<br><br>
+Tap a drink to begin.
+</div>
+
+</div>
+
+<div class="cart-bottom">
+
+<div class="total-row">
+<span>Subtotal</span>
+<span id="subtotal">$0.00</span>
+</div>
+
+<div class="total-row">
+<span>Tax</span>
+<span id="tax">$0.00</span>
+</div>
+
+<div class="total-row total">
+<span>Total</span>
+<span id="total">$0.00</span>
+</div>
+
+<button class="charge" onclick="completeSale()">
+Charge
+</button>
+
+<button class="clear" onclick="clearCart()">
+Clear Order
+</button>
+
+</div>
+
+</aside>
+
+</div>
+
+</section>
+
+<!-- MENU EDITOR -->
+
+<section id="menu" class="page hidden">
+
+<div class="editor">
+
+<h2>Menu Manager</h2>
+
+<p style="color:#888;">
+Add, rename, price, or remove your drinks.
+</p>
+
+<div class="editor-box">
+
+<h3>Add a Drink</h3>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Drink Name</label>
+<input id="newName" placeholder="Example: Galaxy Fizz">
+</div>
+
+<div class="field">
+<label>Price</label>
+<input id="newPrice" type="number" step="0.01" placeholder="4.50">
+</div>
+
+<div class="field">
+<label>Category</label>
+
+<select id="newCategory">
+
+<option value="refreshers">Refreshers</option>
+<option value="soda">Soda</option>
+<option value="tea">Tea</option>
+<option value="special">Specials</option>
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Icon</label>
+<input id="newIcon" value="🥤">
+</div>
+
+</div>
+
+<button class="add-btn" onclick="addDrink()">
++ Add Drink
+</button>
+
+</div>
+
+<div class="editor-box">
+
+<h3>Your Drinks</h3>
+
+<div id="editorList"></div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- GOALS -->
+
+<section id="goals" class="page hidden">
+
+<div class="editor">
+
+<h2>Goals</h2>
+
+<div class="editor-box">
+
+<h3>Daily Sales Goal</h3>
+
+<p style="color:#888;">
+Set the amount your business wants to sell today.
+</p>
+
+<div class="field">
+
+<label>Daily Goal</label>
+
+<input
+id="goalInput"
+type="number"
+step="1"
+>
+
+</div>
+
+<button class="add-btn" onclick="saveGoal()">
+Save Goal
+</button>
+
+</div>
+
+<div class="editor-box">
+
+<h3>Today's Progress</h3>
+
+<div class="goal-number" id="goalStats">
+$0 / $500
+</div>
+
+<div class="progress">
+<div class="progress-bar" id="goalBar2"></div>
+</div>
+
+</div>
+
+</div>
+
+</section>
 
 </div>
 
 <script>
 
-const drinks = [
-  {
-    name: "Cosmic Fizz",
-    price: 4.50,
-    category: "soda",
-    icon: "🥤"
-  },
-  {
-    name: "Galaxy Lemonade",
-    price: 4.25,
-    category: "refreshers",
-    icon: "🍋"
-  },
-  {
-    name: "Starlight Tea",
-    price: 3.75,
-    category: "tea",
-    icon: "🧋"
-  },
-  {
-    name: "Orbit Orange",
-    price: 4.50,
-    category: "refreshers",
-    icon: "🍊"
-  },
-  {
-    name: "Moonberry Splash",
-    price: 5.00,
-    category: "refreshers",
-    icon: "🫐"
-  },
-  {
-    name: "Horizon Cola",
-    price: 3.50,
-    category: "soda",
-    icon: "🥤"
-  },
-  {
-    name: "Nebula Punch",
-    price: 5.25,
-    category: "special",
-    icon: "🌌"
-  },
-  {
-    name: "Meteor Melon",
-    price: 4.75,
-    category: "special",
-    icon: "🍉"
-  }
+/* DATA */
+
+let drinks = JSON.parse(
+  localStorage.getItem("hb_drinks")
+) || [
+
+{
+name:"Cosmic Fizz",
+price:4.50,
+category:"soda",
+icon:"🥤"
+},
+
+{
+name:"Galaxy Lemonade",
+price:4.25,
+category:"refreshers",
+icon:"🍋"
+},
+
+{
+name:"Starlight Tea",
+price:3.75,
+category:"tea",
+icon:"🧋"
+},
+
+{
+name:"Orbit Orange",
+price:4.50,
+category:"refreshers",
+icon:"🍊"
+},
+
+{
+name:"Moonberry Splash",
+price:5.00,
+category:"refreshers",
+icon:"🫐"
+},
+
+{
+name:"Horizon Cola",
+price:3.50,
+category:"soda",
+icon:"🥤"
+},
+
+{
+name:"Nebula Punch",
+price:5.25,
+category:"special",
+icon:"🌌"
+}
+
 ];
 
 let cart = [];
-let currentCategory = "all";
 
-const TAX_RATE = 0.07;
+let category = "all";
 
-function displayDrinks(list = drinks) {
+let dailySales =
+Number(localStorage.getItem("hb_sales")) || 0;
 
-  const container = document.getElementById("drinks");
+let goal =
+Number(localStorage.getItem("hb_goal")) || 500;
 
-  container.innerHTML = "";
+const TAX = 0.07;
 
-  list.forEach((drink, index) => {
 
-    const card = document.createElement("div");
+/* NAVIGATION */
 
-    card.className = "drink";
+function showPage(page, button) {
 
-    card.innerHTML = `
-      <div class="drink-icon">${drink.icon}</div>
-      <h3>${drink.name}</h3>
-      <p>${drink.category}</p>
-      <div class="price">$${drink.price.toFixed(2)}</div>
-    `;
+document.querySelectorAll(".page")
+.forEach(p => p.classList.add("hidden"));
 
-    card.onclick = () => addToCart(index);
+document.getElementById(page)
+.classList.remove("hidden");
 
-    container.appendChild(card);
+document.querySelectorAll(".nav button")
+.forEach(b => b.classList.remove("active"));
 
-  });
+button.classList.add("active");
+
+if(page === "menu") {
+renderEditor();
 }
+
+if(page === "goals") {
+updateGoal();
+}
+
+}
+
+
+/* DRINK DISPLAY */
+
+function renderDrinks() {
+
+const container =
+document.getElementById("drinks");
+
+const search =
+document.getElementById("search")
+.value.toLowerCase();
+
+container.innerHTML = "";
+
+drinks
+.filter(d =>
+(category === "all" || d.category === category) &&
+d.name.toLowerCase().includes(search)
+)
+.forEach((drink,index) => {
+
+const card =
+document.createElement("div");
+
+card.className = "drink";
+
+card.innerHTML = `
+
+<div class="drink-icon">
+${drink.icon}
+</div>
+
+<div class="drink-name">
+${drink.name}
+</div>
+
+<div class="drink-category">
+${drink.category}
+</div>
+
+<div class="drink-price">
+$${drink.price.toFixed(2)}
+</div>
+
+`;
+
+card.onclick = () => addToCart(index);
+
+container.appendChild(card);
+
+});
+
+}
+
+
+/* CATEGORY */
+
+function setCategory(value, button) {
+
+category = value;
+
+document.querySelectorAll(".category")
+.forEach(b => b.classList.remove("active"));
+
+button.classList.add("active");
+
+renderDrinks();
+
+}
+
+
+/* CART */
 
 function addToCart(index) {
 
-  const drink = drinks[index];
+const drink = drinks[index];
 
-  const existing = cart.find(item => item.name === drink.name);
+const existing =
+cart.find(x => x.name === drink.name);
 
-  if (existing) {
-    existing.quantity++;
-  } else {
-    cart.push({
-      ...drink,
-      quantity: 1
-    });
-  }
+if(existing) {
+existing.quantity++;
+}
+else {
 
-  updateCart();
+cart.push({
+...drink,
+quantity:1
+});
+
 }
 
-function updateCart() {
+renderCart();
 
-  const container = document.getElementById("cartItems");
-
-  if (cart.length === 0) {
-
-    container.innerHTML = `
-      <div class="empty">
-        No drinks added yet.<br><br>
-        Tap a drink to start an order.
-      </div>
-    `;
-
-  } else {
-
-    container.innerHTML = "";
-
-    cart.forEach((item, index) => {
-
-      const element = document.createElement("div");
-
-      element.className = "cart-item";
-
-      element.innerHTML = `
-        <div class="item-row">
-          <div class="item-name">${item.name}</div>
-          <div class="item-price">
-            $${(item.price * item.quantity).toFixed(2)}
-          </div>
-        </div>
-
-        <div class="quantity">
-          <button onclick="changeQuantity(${index}, -1)">−</button>
-
-          <span>${item.quantity}</span>
-
-          <button onclick="changeQuantity(${index}, 1)">+</button>
-        </div>
-      `;
-
-      container.appendChild(element);
-
-    });
-
-  }
-
-  calculateTotals();
 }
+
 
 function changeQuantity(index, amount) {
 
-  cart[index].quantity += amount;
+cart[index].quantity += amount;
 
-  if (cart[index].quantity <= 0) {
-    cart.splice(index, 1);
-  }
-
-  updateCart();
+if(cart[index].quantity <= 0) {
+cart.splice(index,1);
 }
+
+renderCart();
+
+}
+
+
+function renderCart() {
+
+const container =
+document.getElementById("cartItems");
+
+if(cart.length === 0) {
+
+container.innerHTML = `
+<div class="empty">
+No drinks added.<br><br>
+Tap a drink to begin.
+</div>
+`;
+
+}
+else {
+
+container.innerHTML = "";
+
+cart.forEach((item,index) => {
+
+const div =
+document.createElement("div");
+
+div.className = "cart-item";
+
+div.innerHTML = `
+
+<div class="item-row">
+
+<strong>${item.name}</strong>
+
+<span>
+$${(item.price * item.quantity).toFixed(2)}
+</span>
+
+</div>
+
+<div class="quantity">
+
+<button onclick="changeQuantity(${index},-1)">
+−
+</button>
+
+<span>${item.quantity}</span>
+
+<button onclick="changeQuantity(${index},1)">
++
+</button>
+
+</div>
+
+`;
+
+container.appendChild(div);
+
+});
+
+}
+
+calculateTotals();
+
+}
+
 
 function calculateTotals() {
 
-  let subtotal = 0;
+let subtotal = 0;
 
-  cart.forEach(item => {
-    subtotal += item.price * item.quantity;
-  });
+cart.forEach(item => {
 
-  const tax = subtotal * TAX_RATE;
+subtotal +=
+item.price * item.quantity;
 
-  const total = subtotal + tax;
+});
 
-  document.getElementById("subtotal").textContent =
-    `$${subtotal.toFixed(2)}`;
+const tax =
+subtotal * TAX;
 
-  document.getElementById("tax").textContent =
-    `$${tax.toFixed(2)}`;
+const total =
+subtotal + tax;
 
-  document.getElementById("total").textContent =
-    `$${total.toFixed(2)}`;
+document.getElementById("subtotal")
+.textContent = "$" + subtotal.toFixed(2);
+
+document.getElementById("tax")
+.textContent = "$" + tax.toFixed(2);
+
+document.getElementById("total")
+.textContent = "$" + total.toFixed(2);
+
 }
+
+
+/* COMPLETE SALE */
+
+function completeSale() {
+
+if(cart.length === 0) {
+
+alert("Add a drink first.");
+
+return;
+
+}
+
+let subtotal = 0;
+
+cart.forEach(item => {
+
+subtotal +=
+item.price * item.quantity;
+
+});
+
+const total =
+subtotal + subtotal * TAX;
+
+dailySales += total;
+
+localStorage.setItem(
+"hb_sales",
+dailySales
+);
+
+alert(
+"Sale completed!\n\n" +
+"Total: $" +
+total.toFixed(2)
+);
+
+cart = [];
+
+renderCart();
+
+updateGoal();
+
+}
+
+
+/* CLEAR */
 
 function clearCart() {
 
-  cart = [];
+cart = [];
 
-  updateCart();
-}
-
-function checkout() {
-
-  if (cart.length === 0) {
-
-    alert("Add a drink before completing the sale.");
-
-    return;
-  }
-
-  const total = document.getElementById("total").textContent;
-
-  alert(`Sale completed!\n\nTotal: ${total}`);
-
-  clearCart();
+renderCart();
 
 }
 
-function filterCategory(category, button) {
 
-  currentCategory = category;
+/* MENU EDITOR */
 
-  document.querySelectorAll(".category").forEach(btn => {
-    btn.classList.remove("active");
-  });
+function addDrink() {
 
-  button.classList.add("active");
+const name =
+document.getElementById("newName").value.trim();
 
-  if (category === "all") {
+const price =
+Number(document.getElementById("newPrice").value);
 
-    displayDrinks(drinks);
+const category =
+document.getElementById("newCategory").value;
 
-  } else {
+const icon =
+document.getElementById("newIcon").value || "🥤";
 
-    displayDrinks(
-      drinks.filter(drink => drink.category === category)
-    );
+if(!name || !price) {
 
-  }
-}
+alert("Enter a drink name and price.");
 
-function searchDrinks() {
-
-  const search = document
-    .getElementById("search")
-    .value
-    .toLowerCase();
-
-  let results = drinks.filter(drink =>
-    drink.name.toLowerCase().includes(search)
-  );
-
-  if (currentCategory !== "all") {
-
-    results = results.filter(drink =>
-      drink.category === currentCategory
-    );
-
-  }
-
-  displayDrinks(results);
-}
-
-function generateOrderNumber() {
-
-  const number = Math.floor(
-    1000 + Math.random() * 9000
-  );
-
-  document.getElementById("orderNumber").textContent =
-    `Order #${number}`;
+return;
 
 }
 
-displayDrinks();
-generateOrderNumber();
-updateCart();
+drinks.push({
+name,
+price,
+category,
+icon
+});
+
+saveDrinks();
+
+document.getElementById("newName").value = "";
+
+document.getElementById("newPrice").value = "";
+
+document.getElementById("newIcon").value = "🥤";
+
+renderEditor();
+
+renderDrinks();
+
+}
+
+
+function renderEditor() {
+
+const list =
+document.getElementById("editorList");
+
+list.innerHTML = "";
+
+drinks.forEach((drink,index) => {
+
+const box =
+document.createElement("div");
+
+box.style.cssText =
+"padding:15px 0;border-bottom:1px solid #222;";
+
+box.innerHTML = `
+
+<div style="
+display:grid;
+grid-template-columns:50px 1fr 120px 120px;
+gap:10px;
+align-items:center;
+">
+
+<div style="font-size:25px">
+${drink.icon}
+</div>
+
+<input
+value="${drink.name}"
+id="name${index}"
+style="
+background:#111;
+color:white;
+border:1px solid #333;
+padding:10px;
+border-radius:7px;
+">
+
+<input
+value="${drink.price}"
+id="price${index}"
+type="number"
+step="0.01"
+style="
+background:#111;
+color:white;
+border:1px solid #333;
+padding:10px;
+border-radius:7px;
+">
+
+<button
+class="small-btn"
+onclick="saveDrink(${index})">
+Save
+</button>
+
+</div>
+
+<button
+class="small-btn"
+style="margin-top:8px;width:100%"
+onclick="deleteDrink(${index})">
+Delete ${drink.name}
+</button>
+
+`;
+
+list.appendChild(box);
+
+});
+
+}
+
+
+function saveDrink(index) {
+
+const name =
+document.getElementById("name"+index).value;
+
+const price =
+Number(document.getElementById("price"+index).value);
+
+drinks[index].name = name;
+
+drinks[index].price = price;
+
+saveDrinks();
+
+renderEditor();
+
+renderDrinks();
+
+}
+
+
+function deleteDrink(index) {
+
+if(
+confirm(
+"Delete " +
+drinks[index].name +
+"?"
+)
+) {
+
+drinks.splice(index,1);
+
+saveDrinks();
+
+renderEditor();
+
+renderDrinks();
+
+}
+
+}
+
+
+function saveDrinks() {
+
+localStorage.setItem(
+"hb_drinks",
+JSON.stringify(drinks)
+);
+
+}
+
+
+/* GOALS */
+
+function changeGoal() {
+
+const newGoal =
+prompt(
+"Enter today's sales goal:",
+goal
+);
+
+if(newGoal !== null) {
+
+goal =
+Number(newGoal);
+
+if(goal > 0) {
+
+saveGoalValue();
+
+}
+
+}
+
+}
+
+
+function saveGoal() {
+
+const value =
+Number(
+document.getElementById("goalInput").value
+);
+
+if(value > 0) {
+
+goal = value;
+
+saveGoalValue();
+
+alert("Goal saved!");
+
+}
+
+}
+
+
+function saveGoalValue() {
+
+localStorage.setItem(
+"hb_goal",
+goal
+);
+
+updateGoal();
+
+}
+
+
+function updateGoal() {
+
+const percent =
+Math.min(
+(dailySales / goal) * 100,
+100
+);
+
+document.getElementById("goalText")
+.textContent =
+"$" +
+dailySales.toFixed(2) +
+" / $" +
+goal.toFixed(2);
+
+document.getElementById("goalMessage")
+.textContent =
+dailySales >= goal
+? "🎉 Daily goal reached!"
+: "$" +
+Math.max(goal-dailySales,0).toFixed(2) +
+" remaining";
+
+document.getElementById("progressBar")
+.style.width =
+percent + "%";
+
+document.getElementById("goalStats")
+.textContent =
+"$" +
+dailySales.toFixed(2) +
+" / $" +
+goal.toFixed(2);
+
+document.getElementById("goalBar2")
+.style.width =
+percent + "%";
+
+document.getElementById("goalInput")
+.value =
+goal;
+
+}
+
+
+/* START */
+
+renderDrinks();
+
+renderCart();
+
+updateGoal();
 
 </script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizon & Brew POS</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #050505;
+  color: #fff;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+
+header {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #292929;
+  background: #080808;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.brand-name {
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.register {
+  color: #aaa;
+  font-size: 13px;
+}
+
+/* NAV */
+
+.nav {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #292929;
+  background: #090909;
+}
+
+.nav button {
+  background: transparent;
+  color: #aaa;
+  border: 0;
+  padding: 11px 18px;
+  border-radius: 8px;
+}
+
+.nav button:hover,
+.nav button.active {
+  background: white;
+  color: black;
+}
+
+/* PAGE */
+
+.page {
+  padding: 22px;
+  flex: 1;
+}
+
+/* DASHBOARD */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 18px;
+}
+
+.goal-card {
+  background: #0e0e0e;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.goal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.goal-title {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.goal-number {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.goal-edit {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #333;
+  border-radius: 7px;
+  padding: 7px 10px;
+}
+
+.goal-edit:hover {
+  color: white;
+  border-color: white;
+}
+
+.progress {
+  height: 12px;
+  background: #222;
+  border-radius: 20px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: white;
+  transition: width .3s;
+}
+
+.goal-message {
+  margin-top: 10px;
+  color: #999;
+  font-size: 13px;
+}
+
+/* MENU */
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.menu-header h2 {
+  margin: 0;
+}
+
+.search {
+  width: 230px;
+  padding: 12px;
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 9px;
+}
+
+.categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.category {
+  background: #111;
+  color: #aaa;
+  border: 1px solid #333;
+  padding: 10px 15px;
+  border-radius: 20px;
+}
+
+.category.active,
+.category:hover {
+  background: white;
+  color: black;
+}
+
+.drinks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.drink {
+  background: #0e0e0e;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 155px;
+  transition: .15s;
+}
+
+.drink:hover {
+  border-color: white;
+  transform: translateY(-2px);
+}
+
+.drink-icon {
+  font-size: 35px;
+  margin-bottom: 12px;
+}
+
+.drink-name {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.drink-category {
+  color: #777;
+  font-size: 12px;
+}
+
+.drink-price {
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+.drink-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.small-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 7px;
+  border: 1px solid #333;
+  background: #151515;
+  color: white;
+}
+
+.small-btn:hover {
+  background: white;
+  color: black;
+}
+
+/* CART */
+
+.cart {
+  background: #0b0b0b;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  padding: 20px;
+  border-bottom: 1px solid #292929;
+}
+
+.cart-header h2 {
+  margin: 0;
+}
+
+.cart-items {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.empty {
+  text-align: center;
+  color: #666;
+  margin-top: 60px;
+}
+
+.cart-item {
+  padding: 13px 0;
+  border-bottom: 1px solid #222;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.quantity button {
+  width: 30px;
+  height: 30px;
+  background: #171717;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 6px;
+}
+
+.cart-bottom {
+  padding: 18px;
+  border-top: 1px solid #292929;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  color: #aaa;
+  margin-bottom: 9px;
+}
+
+.total {
+  color: white;
+  font-size: 23px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.charge {
+  width: 100%;
+  padding: 16px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.clear {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  background: transparent;
+  color: #999;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+/* EDITOR */
+
+.editor {
+  max-width: 900px;
+}
+
+.editor-box {
+  background: #0e0e0e;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  color: #999;
+  font-size: 13px;
+}
+
+.field input,
+.field select {
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.add-btn {
+  margin-top: 15px;
+  padding: 12px 18px;
+  background: white;
+  color: black;
+  border: 0;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.settings-btn {
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+/* HIDDEN */
+
+.hidden {
+  display: none;
+}
+
+/* MOBILE / IPAD */
+
+@media (max-width: 950px) {
+
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .cart {
+    min-height: 450px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  header {
+    padding: 0 12px;
+  }
+
+  .brand-name {
+    font-size: 13px;
+  }
+
+  .nav {
+    overflow-x: auto;
+  }
+
+  .menu-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+  <div class="brand">
+    <div class="logo">✦</div>
+    <div class="brand-name">HORIZON & BREW</div>
+  </div>
+
+  <div class="register">
+    ● REGISTER OPEN
+  </div>
+</header>
+
+<nav class="nav">
+
+  <button class="active" onclick="showPage('pos', this)">
+    POS
+  </button>
+
+  <button onclick="showPage('menu', this)">
+    Menu
+  </button>
+
+  <button onclick="showPage('goals', this)">
+    Goals
+  </button>
+
+</nav>
+
+<!-- POS PAGE -->
+
+<section id="pos" class="page">
+
+<div class="dashboard">
+
+<div>
+
+<div class="goal-card">
+
+<div class="goal-top">
+
+<div>
+<div class="goal-title">TODAY'S SALES GOAL</div>
+<div class="goal-number" id="goalText">$0 / $500</div>
+</div>
+
+<button class="goal-edit" onclick="changeGoal()">
+Edit Goal
+</button>
+
+</div>
+
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div class="goal-message" id="goalMessage">
+$500 remaining
+</div>
+
+</div>
+
+<div class="menu-header">
+
+<h2>Drinks</h2>
+
+<input
+id="search"
+class="search"
+placeholder="Search drinks..."
+oninput="renderDrinks()"
+>
+
+</div>
+
+<div class="categories">
+
+<button class="category active" onclick="setCategory('all',this)">
+All
+</button>
+
+<button class="category" onclick="setCategory('refreshers',this)">
+Refreshers
+</button>
+
+<button class="category" onclick="setCategory('soda',this)">
+Soda
+</button>
+
+<button class="category" onclick="setCategory('tea',this)">
+Tea
+</button>
+
+<button class="category" onclick="setCategory('special',this)">
+Specials
+</button>
+
+</div>
+
+<div class="drinks" id="drinks"></div>
+
+</div>
+
+<!-- CART -->
+
+<aside class="cart">
+
+<div class="cart-header">
+<h2>Current Order</h2>
+</div>
+
+<div class="cart-items" id="cartItems">
+
+<div class="empty">
+No drinks added.<br><br>
+Tap a drink to begin.
+</div>
+
+</div>
+
+<div class="cart-bottom">
+
+<div class="total-row">
+<span>Subtotal</span>
+<span id="subtotal">$0.00</span>
+</div>
+
+<div class="total-row">
+<span>Tax</span>
+<span id="tax">$0.00</span>
+</div>
+
+<div class="total-row total">
+<span>Total</span>
+<span id="total">$0.00</span>
+</div>
+
+<button class="charge" onclick="completeSale()">
+Charge
+</button>
+
+<button class="clear" onclick="clearCart()">
+Clear Order
+</button>
+
+</div>
+
+</aside>
+
+</div>
+
+</section>
+
+<!-- MENU EDITOR -->
+
+<section id="menu" class="page hidden">
+
+<div class="editor">
+
+<h2>Menu Manager</h2>
+
+<p style="color:#888;">
+Add, rename, price, or remove your drinks.
+</p>
+
+<div class="editor-box">
+
+<h3>Add a Drink</h3>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Drink Name</label>
+<input id="newName" placeholder="Example: Galaxy Fizz">
+</div>
+
+<div class="field">
+<label>Price</label>
+<input id="newPrice" type="number" step="0.01" placeholder="4.50">
+</div>
+
+<div class="field">
+<label>Category</label>
+
+<select id="newCategory">
+
+<option value="refreshers">Refreshers</option>
+<option value="soda">Soda</option>
+<option value="tea">Tea</option>
+<option value="special">Specials</option>
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Icon</label>
+<input id="newIcon" value="🥤">
+</div>
+
+</div>
+
+<button class="add-btn" onclick="addDrink()">
++ Add Drink
+</button>
+
+</div>
+
+<div class="editor-box">
+
+<h3>Your Drinks</h3>
+
+<div id="editorList"></div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- GOALS -->
+
+<section id="goals" class="page hidden">
+
+<div class="editor">
+
+<h2>Goals</h2>
+
+<div class="editor-box">
+
+<h3>Daily Sales Goal</h3>
+
+<p style="color:#888;">
+Set the amount your business wants to sell today.
+</p>
+
+<div class="field">
+
+<label>Daily Goal</label>
+
+<input
+id="goalInput"
+type="number"
+step="1"
+>
+
+</div>
+
+<button class="add-btn" onclick="saveGoal()">
+Save Goal
+</button>
+
+</div>
+
+<div class="editor-box">
+
+<h3>Today's Progress</h3>
+
+<div class="goal-number" id="goalStats">
+$0 / $500
+</div>
+
+<div class="progress">
+<div class="progress-bar" id="goalBar2"></div>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+<script>
+
+/* DATA */
+
+let drinks = JSON.parse(
+  localStorage.getItem("hb_drinks")
+) || [
+
+{
+name:"Cosmic Fizz",
+price:4.50,
+category:"soda",
+icon:"🥤"
+},
+
+{
+name:"Galaxy Lemonade",
+price:4.25,
+category:"refreshers",
+icon:"🍋"
+},
+
+{
+name:"Starlight Tea",
+price:3.75,
+category:"tea",
+icon:"🧋"
+},
+
+{
+name:"Orbit Orange",
+price:4.50,
+category:"refreshers",
+icon:"🍊"
+},
+
+{
+name:"Moonberry Splash",
+price:5.00,
+category:"refreshers",
+icon:"🫐"
+},
+
+{
+name:"Horizon Cola",
+price:3.50,
+category:"soda",
+icon:"🥤"
+},
+
+{
+name:"Nebula Punch",
+price:5.25,
+category:"special",
+icon:"🌌"
+}
+
+];
+
+let cart = [];
+
+let category = "all";
+
+let dailySales =
+Number(localStorage.getItem("hb_sales")) || 0;
+
+let goal =
+Number(localStorage.getItem("hb_goal")) || 500;
+
+const TAX = 0.07;
+
+
+/* NAVIGATION */
+
+function showPage(page, button) {
+
+document.querySelectorAll(".page")
+.forEach(p => p.classList.add("hidden"));
+
+document.getElementById(page)
+.classList.remove("hidden");
+
+document.querySelectorAll(".nav button")
+.forEach(b => b.classList.remove("active"));
+
+button.classList.add("active");
+
+if(page === "menu") {
+renderEditor();
+}
+
+if(page === "goals") {
+updateGoal();
+}
+
+}
+
+
+/* DRINK DISPLAY */
+
+function renderDrinks() {
+
+const container =
+document.getElementById("drinks");
+
+const search =
+document.getElementById("search")
+.value.toLowerCase();
+
+container.innerHTML = "";
+
+drinks
+.filter(d =>
+(category === "all" || d.category === category) &&
+d.name.toLowerCase().includes(search)
+)
+.forEach((drink,index) => {
+
+const card =
+document.createElement("div");
+
+card.className = "drink";
+
+card.innerHTML = `
+
+<div class="drink-icon">
+${drink.icon}
+</div>
+
+<div class="drink-name">
+${drink.name}
+</div>
+
+<div class="drink-category">
+${drink.category}
+</div>
+
+<div class="drink-price">
+$${drink.price.toFixed(2)}
+</div>
+
+`;
+
+card.onclick = () => addToCart(index);
+
+container.appendChild(card);
+
+});
+
+}
+
+
+/* CATEGORY */
+
+function setCategory(value, button) {
+
+category = value;
+
+document.querySelectorAll(".category")
+.forEach(b => b.classList.remove("active"));
+
+button.classList.add("active");
+
+renderDrinks();
+
+}
+
+
+/* CART */
+
+function addToCart(index) {
+
+const drink = drinks[index];
+
+const existing =
+cart.find(x => x.name === drink.name);
+
+if(existing) {
+existing.quantity++;
+}
+else {
+
+cart.push({
+...drink,
+quantity:1
+});
+
+}
+
+renderCart();
+
+}
+
+
+function changeQuantity(index, amount) {
+
+cart[index].quantity += amount;
+
+if(cart[index].quantity <= 0) {
+cart.splice(index,1);
+}
+
+renderCart();
+
+}
+
+
+function renderCart() {
+
+const container =
+document.getElementById("cartItems");
+
+if(cart.length === 0) {
+
+container.innerHTML = `
+<div class="empty">
+No drinks added.<br><br>
+Tap a drink to begin.
+</div>
+`;
+
+}
+else {
+
+container.innerHTML = "";
+
+cart.forEach((item,index) => {
+
+const div =
+document.createElement("div");
+
+div.className = "cart-item";
+
+div.innerHTML = `
+
+<div class="item-row">
+
+<strong>${item.name}</strong>
+
+<span>
+$${(item.price * item.quantity).toFixed(2)}
+</span>
+
+</div>
+
+<div class="quantity">
+
+<button onclick="changeQuantity(${index},-1)">
+−
+</button>
+
+<span>${item.quantity}</span>
+
+<button onclick="changeQuantity(${index},1)">
++
+</button>
+
+</div>
+
+`;
+
+container.appendChild(div);
+
+});
+
+}
+
+calculateTotals();
+
+}
+
+
+function calculateTotals() {
+
+let subtotal = 0;
+
+cart.forEach(item => {
+
+subtotal +=
+item.price * item.quantity;
+
+});
+
+const tax =
+subtotal * TAX;
+
+const total =
+subtotal + tax;
+
+document.getElementById("subtotal")
+.textContent = "$" + subtotal.toFixed(2);
+
+document.getElementById("tax")
+.textContent = "$" + tax.toFixed(2);
+
+document.getElementById("total")
+.textContent = "$" + total.toFixed(2);
+
+}
+
+
+/* COMPLETE SALE */
+
+function completeSale() {
+
+if(cart.length === 0) {
+
+alert("Add a drink first.");
+
+return;
+
+}
+
+let subtotal = 0;
+
+cart.forEach(item => {
+
+subtotal +=
+item.price * item.quantity;
+
+});
+
+const total =
+subtotal + subtotal * TAX;
+
+dailySales += total;
+
+localStorage.setItem(
+"hb_sales",
+dailySales
+);
+
+alert(
+"Sale completed!\n\n" +
+"Total: $" +
+total.toFixed(2)
+);
+
+cart = [];
+
+renderCart();
+
+updateGoal();
+
+}
+
+
+/* CLEAR */
+
+function clearCart() {
+
+cart = [];
+
+renderCart();
+
+}
+
+
+/* MENU EDITOR */
+
+function addDrink() {
+
+const name =
+document.getElementById("newName").value.trim();
+
+const price =
+Number(document.getElementById("newPrice").value);
+
+const category =
+document.getElementById("newCategory").value;
+
+const icon =
+document.getElementById("newIcon").value || "🥤";
+
+if(!name || !price) {
+
+alert("Enter a drink name and price.");
+
+return;
+
+}
+
+drinks.push({
+name,
+price,
+category,
+icon
+});
+
+saveDrinks();
+
+document.getElementById("newName").value = "";
+
+document.getElementById("newPrice").value = "";
+
+document.getElementById("newIcon").value = "🥤";
+
+renderEditor();
+
+renderDrinks();
+
+}
+
+
+function renderEditor() {
+
+const list =
+document.getElementById("editorList");
+
+list.innerHTML = "";
+
+drinks.forEach((drink,index) => {
+
+const box =
+document.createElement("div");
+
+box.style.cssText =
+"padding:15px 0;border-bottom:1px solid #222;";
+
+box.innerHTML = `
+
+<div style="
+display:grid;
+grid-template-columns:50px 1fr 120px 120px;
+gap:10px;
+align-items:center;
+">
+
+<div style="font-size:25px">
+${drink.icon}
+</div>
+
+<input
+value="${drink.name}"
+id="name${index}"
+style="
+background:#111;
+color:white;
+border:1px solid #333;
+padding:10px;
+border-radius:7px;
+">
+
+<input
+value="${drink.price}"
+id="price${index}"
+type="number"
+step="0.01"
+style="
+background:#111;
+color:white;
+border:1px solid #333;
+padding:10px;
+border-radius:7px;
+">
+
+<button
+class="small-btn"
+onclick="saveDrink(${index})">
+Save
+</button>
+
+</div>
+
+<button
+class="small-btn"
+style="margin-top:8px;width:100%"
+onclick="deleteDrink(${index})">
+Delete ${drink.name}
+</button>
+
+`;
+
+list.appendChild(box);
+
+});
+
+}
+
+
+function saveDrink(index) {
+
+const name =
+document.getElementById("name"+index).value;
+
+const price =
+Number(document.getElementById("price"+index).value);
+
+drinks[index].name = name;
+
+drinks[index].price = price;
+
+saveDrinks();
+
+renderEditor();
+
+renderDrinks();
+
+}
+
+
+function deleteDrink(index) {
+
+if(
+confirm(
+"Delete " +
+drinks[index].name +
+"?"
+)
+) {
+
+drinks.splice(index,1);
+
+saveDrinks();
+
+renderEditor();
+
+renderDrinks();
+
+}
+
+}
+
+
+function saveDrinks() {
+
+localStorage.setItem(
+"hb_drinks",
+JSON.stringify(drinks)
+);
+
+}
+
+
+/* GOALS */
+
+function changeGoal() {
+
+const newGoal =
+prompt(
+"Enter today's sales goal:",
+goal
+);
+
+if(newGoal !== null) {
+
+goal =
+Number(newGoal);
+
+if(goal > 0) {
+
+saveGoalValue();
+
+}
+
+}
+
+}
+
+
+function saveGoal() {
+
+const value =
+Number(
+document.getElementById("goalInput").value
+);
+
+if(value > 0) {
+
+goal = value;
+
+saveGoalValue();
+
+alert("Goal saved!");
+
+}
+
+}
+
+
+function saveGoalValue() {
+
+localStorage.setItem(
+"hb_goal",
+goal
+);
+
+updateGoal();
+
+}
+
+
+function updateGoal() {
+
+const percent =
+Math.min(
+(dailySales / goal) * 100,
+100
+);
+
+document.getElementById("goalText")
+.textContent =
+"$" +
+dailySales.toFixed(2) +
+" / $" +
+goal.toFixed(2);
+
+document.getElementById("goalMessage")
+.textContent =
+dailySales >= goal
+? "🎉 Daily goal reached!"
+: "$" +
+Math.max(goal-dailySales,0).toFixed(2) +
+" remaining";
+
+document.getElementById("progressBar")
+.style.width =
+percent + "%";
+
+document.getElementById("goalStats")
+.textContent =
+"$" +
+dailySales.toFixed(2) +
+" / $" +
+goal.toFixed(2);
+
+document.getElementById("goalBar2")
+.style.width =
+percent + "%";
+
+document.getElementById("goalInput")
+.value =
+goal;
+
+}
+
+
+/* START */
+
+renderDrinks();
+
+renderCart();
+
+updateGoal();
+
+</script>
+
+</body>
+</html>
 
 </body>
 </html>
