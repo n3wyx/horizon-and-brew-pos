@@ -2275,21 +2275,23 @@ localStorage.setItem(
      SAVE DRINK
   ========================================== */
 
-  function saveDrinkFromEditor() {
-
+function saveDrinkFromEditor() {
   const wasAdding = editingDrinkID === null;
 
-  const name =
-    document.getElementById("drinkNameInput").value.trim();
+  const nameInput = document.getElementById("drinkNameInput");
+  const priceInput = document.getElementById("drinkPriceInput");
+  const categoryInput = document.getElementById("drinkCategoryInput");
+  const iconInput = document.getElementById("drinkIconInput");
 
-  const price =
-    Number(document.getElementById("drinkPriceInput").value);
+  if (!nameInput || !priceInput || !categoryInput || !iconInput) {
+    alert("Drink editor fields could not be found.");
+    return;
+  }
 
-  const category =
-    document.getElementById("drinkCategoryInput").value.trim();
-
-  const icon =
-    document.getElementById("drinkIconInput").value.trim();
+  const name = nameInput.value.trim();
+  const price = Number(priceInput.value);
+  const category = categoryInput.value.trim();
+  const icon = iconInput.value.trim();
 
   if (!name) {
     alert("Please enter a drink name.");
@@ -2307,7 +2309,6 @@ localStorage.setItem(
   }
 
   if (editingDrinkID === null) {
-
     posDrinks.push({
       id: Date.now(),
       name: name,
@@ -2315,15 +2316,13 @@ localStorage.setItem(
       category: category,
       icon: icon || "🥤"
     });
-
   } else {
-
     const drink = posDrinks.find(
       item => item.id === editingDrinkID
     );
 
     if (!drink) {
-      alert("That drink could not be found.");
+      alert("Drink not found.");
       return;
     }
 
@@ -2338,8 +2337,9 @@ localStorage.setItem(
     JSON.stringify(posDrinks)
   );
 
-  closeDrinkEditor();
+  editingDrinkID = null;
 
+  closeDrinkEditor();
   renderMenu();
   renderPOS();
 
@@ -2348,56 +2348,7 @@ localStorage.setItem(
       ? "Drink added!"
       : "Drink updated!"
   );
-
-  editingDrinkID = null;
 }
-
-  const nameInput =
-    document.getElementById("drinkNameInput");
-
-  const priceInput =
-    document.getElementById("drinkPriceInput");
-
-  const categoryInput =
-    document.getElementById("drinkCategoryInput");
-
-  const iconInput =
-    document.getElementById("drinkIconInput");
-
-
-  if (!nameInput || !priceInput || !categoryInput || !iconInput) {
-
-    alert("The drink editor could not be found.");
-
-    return;
-  }
-
-
-  const name =
-    nameInput.value.trim();
-
-  const price =
-    Number(priceInput.value);
-
-  const category =
-    categoryInput.value.trim();
-
-  const icon =
-    iconInput.value.trim();
-
-
-  if (!name) {
-
-    alert("Please enter a drink name.");
-
-    return;
-  }
-
-
-  if (
-    !Number.isFinite(price) ||
-    price < 0
-  ) {
 
     alert("Please enter a valid price.");
 
