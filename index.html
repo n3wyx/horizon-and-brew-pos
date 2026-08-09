@@ -425,11 +425,1059 @@
         Start a new order.
       </p>
 
-      <div id="posContent"></div>
-<div id="menuContent"></div>
-<div id="goalsContent"></div>
-<div id="reportsContent"></div>
-<div id="settingsContent"></div>
+      <div class="pos-layout">
+
+  <!-- LEFT: PRODUCTS -->
+  <section class="pos-products">
+
+    <div class="pos-toolbar">
+
+      <div>
+        <h2 style="margin:0;">Drinks</h2>
+        <p style="margin:5px 0 0;color:var(--muted);">
+          Tap a drink to add it to the order
+        </p>
+      </div>
+
+      <input
+        id="drinkSearch"
+        type="search"
+        placeholder="🔎 Search drinks..."
+        oninput="renderPOS()"
+        style="
+          width:230px;
+          padding:13px;
+          background:var(--surface);
+          color:var(--text);
+          border:1px solid var(--border);
+          border-radius:var(--radius);
+          outline:none;
+        "
+      >
+
+    </div>
+
+    <!-- CATEGORIES -->
+
+    <div
+      id="categoryButtons"
+      style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin:18px 0;
+      "
+    ></div>
+
+    <!-- PRODUCTS -->
+
+    <div id="productGrid"></div>
+
+  </section>
+
+
+  <!-- RIGHT: ORDER -->
+
+  <aside
+    class="order-panel"
+    style="
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      display:flex;
+      flex-direction:column;
+      min-height:600px;
+    "
+  >
+
+    <div
+      style="
+        padding:18px;
+        border-bottom:1px solid var(--border);
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      "
+    >
+
+      <div>
+        <h2 style="margin:0;">Current Order</h2>
+
+        <div
+          id="orderNumber"
+          style="
+            color:var(--muted);
+            font-size:12px;
+            margin-top:4px;
+          "
+        >
+          Order #001
+        </div>
+      </div>
+
+      <button
+        onclick="clearOrder()"
+        style="
+          background:transparent;
+          color:var(--muted);
+          border:1px solid var(--border);
+          border-radius:8px;
+          padding:8px 11px;
+        "
+      >
+        Clear
+      </button>
+
+    </div>
+
+
+    <!-- ORDER ITEMS -->
+
+    <div
+      id="orderItems"
+      style="
+        flex:1;
+        overflow:auto;
+        padding:15px;
+      "
+    ></div>
+
+
+    <!-- TOTALS -->
+
+    <div
+      style="
+        border-top:1px solid var(--border);
+        padding:18px;
+      "
+    >
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          color:var(--muted);
+          margin-bottom:8px;
+        "
+      >
+        <span>Subtotal</span>
+        <span id="posSubtotal">$0.00</span>
+      </div>
+
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          color:var(--muted);
+          margin-bottom:8px;
+        "
+      >
+        <span>Tax</span>
+        <span id="posTax">$0.00</span>
+      </div>
+
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          font-size:24px;
+          font-weight:bold;
+          margin:14px 0;
+        "
+      >
+        <span>Total</span>
+        <span id="posTotal">$0.00</span>
+      </div>
+
+
+      <button
+        onclick="chargeOrder()"
+        style="
+          width:100%;
+          padding:17px;
+          background:var(--accent);
+          color:var(--accent-text);
+          border:0;
+          border-radius:var(--radius);
+          font-size:18px;
+          font-weight:bold;
+        "
+      >
+        💳 Charge
+      </button>
+
+    </div>
+
+  </aside>
+
+</div>
+
+
+<style>
+
+  .pos-layout {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 380px;
+    gap:20px;
+    align-items:start;
+  }
+
+  .pos-products {
+    min-width:0;
+  }
+
+  .pos-toolbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+  }
+
+  #productGrid {
+    display:grid;
+    grid-template-columns:
+      repeat(auto-fill,minmax(170px,1fr));
+    gap:14px;
+  }
+
+  .category-btn {
+    padding:10px 16px;
+    border-radius:30px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--muted);
+  }
+
+  .category-btn:hover,
+  .category-btn.selected {
+    background:var(--accent);
+    color:var(--accent-text);
+  }
+
+  .product-card {
+    min-height:160px;
+    padding:18px;
+
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+
+    color:var(--text);
+    text-align:left;
+
+    transition:
+      transform .12s ease,
+      border-color .12s ease;
+  }
+
+  .product-card:hover {
+    transform:translateY(-2px);
+    border-color:var(--text);
+  }
+
+  .product-icon {
+    font-size:38px;
+    margin-bottom:15px;
+  }
+
+  .product-name {
+    font-size:17px;
+    font-weight:bold;
+  }
+
+  .product-category {
+    margin-top:5px;
+    color:var(--muted);
+    font-size:12px;
+  }
+
+  .product-price {
+    margin-top:14px;
+    font-weight:bold;
+    font-size:16px;
+  }
+
+  .order-empty {
+    height:100%;
+    min-height:300px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+    color:var(--muted);
+  }
+
+  .order-item {
+    padding:14px 0;
+    border-bottom:1px solid var(--border);
+  }
+
+  .order-item-top {
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .order-item-name {
+    font-weight:bold;
+  }
+
+  .order-item-price {
+    white-space:nowrap;
+  }
+
+  .quantity-controls {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+  }
+
+  .quantity-button {
+    width:32px;
+    height:32px;
+
+    background:var(--surface-2);
+    color:var(--text);
+
+    border:1px solid var(--border);
+    border-radius:8px;
+  }
+
+  .quantity-button:hover {
+    background:var(--accent);
+    color:var(--accent-text);
+  }
+
+  @media (max-width:950px) {
+
+    .pos-layout {
+      grid-template-columns:1fr;
+    }
+
+    .order-panel {
+      min-height:450px !important;
+    }
+
+  }
+
+  @media (max-width:650px) {
+
+    .pos-toolbar {
+      flex-direction:column;
+      align-items:stretch;
+    }
+
+    #drinkSearch {
+      width:100% !important;
+    }
+
+    #productGrid {
+      grid-template-columns:
+        repeat(2,minmax(0,1fr));
+    }
+
+  }
+
+</style>
+
+
+<script>
+
+  /* =========================================
+     HORIZON & BREW POS
+  ========================================= */
+
+  let posCategory = "All";
+
+  let posOrder = [];
+
+  let orderNumber =
+    Number(localStorage.getItem("hb_order_number") || 1);
+
+
+  /* =========================================
+     DEFAULT DRINKS
+  ========================================= */
+
+  const defaultDrinks = [
+
+    {
+      id:1,
+      name:"Cosmic Fizz",
+      price:4.50,
+      category:"Soda",
+      icon:"🥤"
+    },
+
+    {
+      id:2,
+      name:"Galaxy Lemonade",
+      price:4.25,
+      category:"Refreshers",
+      icon:"🍋"
+    },
+
+    {
+      id:3,
+      name:"Starlight Tea",
+      price:3.75,
+      category:"Tea",
+      icon:"🧋"
+    },
+
+    {
+      id:4,
+      name:"Orbit Orange",
+      price:4.50,
+      category:"Refreshers",
+      icon:"🍊"
+    },
+
+    {
+      id:5,
+      name:"Moonberry Splash",
+      price:5.00,
+      category:"Refreshers",
+      icon:"🫐"
+    },
+
+    {
+      id:6,
+      name:"Horizon Cola",
+      price:3.50,
+      category:"Soda",
+      icon:"🥤"
+    },
+
+    {
+      id:7,
+      name:"Nebula Punch",
+      price:5.25,
+      category:"Specials",
+      icon:"🌌"
+    },
+
+    {
+      id:8,
+      name:"Solar Strawberry",
+      price:4.75,
+      category:"Refreshers",
+      icon:"🍓"
+    }
+
+  ];
+
+
+  /* =========================================
+     LOAD DRINKS
+  ========================================= */
+
+  let posDrinks =
+    JSON.parse(
+      localStorage.getItem("hb_pos_drinks")
+    ) || defaultDrinks;
+
+
+  /* =========================================
+     RENDER POS
+  ========================================= */
+
+  function renderPOS() {
+
+    const grid =
+      document.getElementById("productGrid");
+
+    const search =
+      (
+        document.getElementById("drinkSearch")
+        ?.value || ""
+      ).toLowerCase();
+
+
+    /* CATEGORIES */
+
+    const categories = [
+      "All",
+      ...new Set(
+        posDrinks.map(drink => drink.category)
+      )
+    ];
+
+
+    const categoryContainer =
+      document.getElementById("categoryButtons");
+
+    categoryContainer.innerHTML = "";
+
+
+    categories.forEach(category => {
+
+      const button =
+        document.createElement("button");
+
+      button.className =
+        "category-btn" +
+        (
+          posCategory === category
+            ? " selected"
+            : ""
+        );
+
+      button.textContent = category;
+
+      button.onclick = function() {
+
+        posCategory = category;
+
+        renderPOS();
+
+      };
+
+      categoryContainer.appendChild(button);
+
+    });
+
+
+    /* FILTER PRODUCTS */
+
+    const filtered =
+      posDrinks.filter(drink => {
+
+        const matchesCategory =
+          posCategory === "All" ||
+          drink.category === posCategory;
+
+        const matchesSearch =
+          drink.name
+            .toLowerCase()
+            .includes(search);
+
+        return (
+          matchesCategory &&
+          matchesSearch
+        );
+
+      });
+
+
+    grid.innerHTML = "";
+
+
+    if (filtered.length === 0) {
+
+      grid.innerHTML = `
+        <div style="
+          padding:40px;
+          color:var(--muted);
+          text-align:center;
+          grid-column:1/-1;
+        ">
+          No drinks found.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    filtered.forEach(drink => {
+
+      const card =
+        document.createElement("button");
+
+      card.className = "product-card";
+
+
+      card.innerHTML = `
+
+        <div class="product-icon">
+          ${drink.icon}
+        </div>
+
+        <div class="product-name">
+          ${escapeHTML(drink.name)}
+        </div>
+
+        <div class="product-category">
+          ${escapeHTML(drink.category)}
+        </div>
+
+        <div class="product-price">
+          $${Number(drink.price).toFixed(2)}
+        </div>
+
+      `;
+
+
+      card.onclick = function() {
+
+        addToOrder(drink.id);
+
+      };
+
+
+      grid.appendChild(card);
+
+    });
+
+
+    renderOrder();
+
+  }
+
+
+  /* =========================================
+     ADD TO ORDER
+  ========================================= */
+
+  function addToOrder(drinkID) {
+
+    const drink =
+      posDrinks.find(
+        item => item.id === drinkID
+      );
+
+    if (!drink) return;
+
+
+    const existing =
+      posOrder.find(
+        item => item.id === drinkID
+      );
+
+
+    if (existing) {
+
+      existing.quantity++;
+
+    } else {
+
+      posOrder.push({
+
+        ...drink,
+
+        quantity:1
+
+      });
+
+    }
+
+
+    renderOrder();
+
+  }
+
+
+  /* =========================================
+     CHANGE QUANTITY
+  ========================================= */
+
+  function changeOrderQuantity(
+    index,
+    amount
+  ) {
+
+    if (!posOrder[index]) return;
+
+
+    posOrder[index].quantity += amount;
+
+
+    if (
+      posOrder[index].quantity <= 0
+    ) {
+
+      posOrder.splice(index,1);
+
+    }
+
+
+    renderOrder();
+
+  }
+
+
+  /* =========================================
+     RENDER ORDER
+  ========================================= */
+
+  function renderOrder() {
+
+    const container =
+      document.getElementById("orderItems");
+
+    if (!container) return;
+
+
+    if (posOrder.length === 0) {
+
+      container.innerHTML = `
+
+        <div class="order-empty">
+
+          <div>
+
+            <div style="
+              font-size:42px;
+              margin-bottom:12px;
+            ">
+              🧾
+            </div>
+
+            <strong>
+              No items yet
+            </strong>
+
+            <div style="
+              margin-top:7px;
+              font-size:13px;
+            ">
+              Tap a drink to start an order.
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    } else {
+
+      container.innerHTML = "";
+
+
+      posOrder.forEach(
+        (item,index) => {
+
+          const row =
+            document.createElement("div");
+
+          row.className =
+            "order-item";
+
+
+          row.innerHTML = `
+
+            <div class="order-item-top">
+
+              <div>
+
+                <div class="order-item-name">
+                  ${escapeHTML(item.name)}
+                </div>
+
+                <div style="
+                  color:var(--muted);
+                  font-size:12px;
+                  margin-top:4px;
+                ">
+                  $${Number(item.price).toFixed(2)}
+                  each
+                </div>
+
+              </div>
+
+              <div class="order-item-price">
+                $${(
+                  item.price *
+                  item.quantity
+                ).toFixed(2)}
+              </div>
+
+            </div>
+
+
+            <div class="quantity-controls">
+
+              <button
+                class="quantity-button"
+                onclick="
+                  changeOrderQuantity(
+                    ${index},
+                    -1
+                  )
+                "
+              >
+                −
+              </button>
+
+              <strong>
+                ${item.quantity}
+              </strong>
+
+              <button
+                class="quantity-button"
+                onclick="
+                  changeOrderQuantity(
+                    ${index},
+                    1
+                  )
+                "
+              >
+                +
+              </button>
+
+            </div>
+
+          `;
+
+
+          container.appendChild(row);
+
+        }
+      );
+
+    }
+
+
+    calculatePOS();
+
+  }
+
+
+  /* =========================================
+     CALCULATE TOTALS
+  ========================================= */
+
+  function calculatePOS() {
+
+    let subtotal = 0;
+
+
+    posOrder.forEach(item => {
+
+      subtotal +=
+        Number(item.price) *
+        Number(item.quantity);
+
+    });
+
+
+    const taxRate =
+      Number(
+        localStorage.getItem("hb_tax")
+      ) || 0.07;
+
+
+    const tax =
+      subtotal * taxRate;
+
+
+    const total =
+      subtotal + tax;
+
+
+    document.getElementById(
+      "posSubtotal"
+    ).textContent =
+      "$" + subtotal.toFixed(2);
+
+
+    document.getElementById(
+      "posTax"
+    ).textContent =
+      "$" + tax.toFixed(2);
+
+
+    document.getElementById(
+      "posTotal"
+    ).textContent =
+      "$" + total.toFixed(2);
+
+  }
+
+
+  /* =========================================
+     CLEAR ORDER
+  ========================================= */
+
+  function clearOrder() {
+
+    if (posOrder.length === 0) return;
+
+
+    const confirmed =
+      confirm(
+        "Clear this order?"
+      );
+
+
+    if (!confirmed) return;
+
+
+    posOrder = [];
+
+    renderOrder();
+
+  }
+
+
+  /* =========================================
+     CHARGE
+  ========================================= */
+
+  function chargeOrder() {
+
+    if (posOrder.length === 0) {
+
+      alert(
+        "Add a drink to the order first."
+      );
+
+      return;
+
+    }
+
+
+    let subtotal = 0;
+
+
+    posOrder.forEach(item => {
+
+      subtotal +=
+        Number(item.price) *
+        Number(item.quantity);
+
+    });
+
+
+    const taxRate =
+      Number(
+        localStorage.getItem("hb_tax")
+      ) || 0.07;
+
+
+    const tax =
+      subtotal * taxRate;
+
+
+    const total =
+      subtotal + tax;
+
+
+    const payment =
+      prompt(
+        "Payment amount received:\n\n$" +
+        total.toFixed(2)
+      );
+
+
+    if (payment === null) return;
+
+
+    const amount =
+      Number(payment);
+
+
+    if (
+      Number.isNaN(amount) ||
+      amount < total
+    ) {
+
+      alert(
+        "Payment is not enough."
+      );
+
+      return;
+
+    }
+
+
+    const change =
+      amount - total;
+
+
+    /* SAVE SALES */
+
+    const oldSales =
+      Number(
+        localStorage.getItem(
+          "hb_sales"
+        )
+      ) || 0;
+
+
+    localStorage.setItem(
+      "hb_sales",
+      (
+        oldSales + total
+      ).toFixed(2)
+    );
+
+
+    /* SAVE ORDER NUMBER */
+
+    orderNumber++;
+
+    localStorage.setItem(
+      "hb_order_number",
+      orderNumber
+    );
+
+
+    alert(
+      "Payment complete!\n\n" +
+
+      "Total: $" +
+      total.toFixed(2) +
+
+      "\nReceived: $" +
+      amount.toFixed(2) +
+
+      "\nChange: $" +
+      change.toFixed(2)
+    );
+
+
+    posOrder = [];
+
+    document.getElementById(
+      "orderNumber"
+    ).textContent =
+      "Order #" +
+      String(orderNumber)
+        .padStart(3,"0");
+
+
+    renderOrder();
+
+  }
+
+
+  /* =========================================
+     SAFELY DISPLAY TEXT
+  ========================================= */
+
+  function escapeHTML(value) {
+
+    return String(value)
+
+      .replaceAll("&","&amp;")
+
+      .replaceAll("<","&lt;")
+
+      .replaceAll(">","&gt;")
+
+      .replaceAll('"',"&quot;")
+
+      .replaceAll("'","&#039;");
+
+  }
+
+
+  /* =========================================
+     START POS
+  ========================================= */
+
+  renderPOS();
+
+</script>
 
     </main>
 
