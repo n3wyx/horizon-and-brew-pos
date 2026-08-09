@@ -1,2816 +1,605 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Horizon & Brew POS</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #050505;
-  color: #fff;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* HEADER */
-
-header {
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  border-bottom: 1px solid #292929;
-  background: #080808;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  width: 42px;
-  height: 42px;
-  border: 2px solid white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-}
-
-.brand-name {
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.register {
-  color: #aaa;
-  font-size: 13px;
-}
-
-/* NAV */
-
-.nav {
-  display: flex;
-  gap: 8px;
-  padding: 10px 20px;
-  border-bottom: 1px solid #292929;
-  background: #090909;
-}
-
-.nav button {
-  background: transparent;
-  color: #aaa;
-  border: 0;
-  padding: 11px 18px;
-  border-radius: 8px;
-}
-
-.nav button:hover,
-.nav button.active {
-  background: white;
-  color: black;
-}
-
-/* PAGE */
-
-.page {
-  padding: 22px;
-  flex: 1;
-}
-
-/* DASHBOARD */
-
-.dashboard {
-  display: grid;
-  grid-template-columns: 1fr 330px;
-  gap: 18px;
-}
-
-.goal-card {
-  background: #0e0e0e;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 18px;
-}
-
-.goal-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.goal-title {
-  font-size: 14px;
-  color: #aaa;
-}
-
-.goal-number {
-  font-size: 25px;
-  font-weight: bold;
-}
-
-.goal-edit {
-  background: transparent;
-  color: #aaa;
-  border: 1px solid #333;
-  border-radius: 7px;
-  padding: 7px 10px;
-}
-
-.goal-edit:hover {
-  color: white;
-  border-color: white;
-}
-
-.progress {
-  height: 12px;
-  background: #222;
-  border-radius: 20px;
-  margin-top: 15px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: white;
-  transition: width .3s;
-}
-
-.goal-message {
-  margin-top: 10px;
-  color: #999;
-  font-size: 13px;
-}
-
-/* MENU */
-
-.menu-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.menu-header h2 {
-  margin: 0;
-}
-
-.search {
-  width: 230px;
-  padding: 12px;
-  background: #111;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 9px;
-}
-
-.categories {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.category {
-  background: #111;
-  color: #aaa;
-  border: 1px solid #333;
-  padding: 10px 15px;
-  border-radius: 20px;
-}
-
-.category.active,
-.category:hover {
-  background: white;
-  color: black;
-}
-
-.drinks {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
-}
-
-.drink {
-  background: #0e0e0e;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  padding: 18px;
-  min-height: 155px;
-  transition: .15s;
-}
-
-.drink:hover {
-  border-color: white;
-  transform: translateY(-2px);
-}
-
-.drink-icon {
-  font-size: 35px;
-  margin-bottom: 12px;
-}
-
-.drink-name {
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.drink-category {
-  color: #777;
-  font-size: 12px;
-}
-
-.drink-price {
-  margin-top: 12px;
-  font-weight: bold;
-}
-
-.drink-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.small-btn {
-  flex: 1;
-  padding: 8px;
-  border-radius: 7px;
-  border: 1px solid #333;
-  background: #151515;
-  color: white;
-}
-
-.small-btn:hover {
-  background: white;
-  color: black;
-}
-
-/* CART */
-
-.cart {
-  background: #0b0b0b;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-}
-
-.cart-header {
-  padding: 20px;
-  border-bottom: 1px solid #292929;
-}
-
-.cart-header h2 {
-  margin: 0;
-}
-
-.cart-items {
-  flex: 1;
-  padding: 15px;
-  overflow-y: auto;
-}
-
-.empty {
-  text-align: center;
-  color: #666;
-  margin-top: 60px;
-}
-
-.cart-item {
-  padding: 13px 0;
-  border-bottom: 1px solid #222;
-}
-
-.item-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.quantity {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.quantity button {
-  width: 30px;
-  height: 30px;
-  background: #171717;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 6px;
-}
-
-.cart-bottom {
-  padding: 18px;
-  border-top: 1px solid #292929;
-}
-
-.total-row {
-  display: flex;
-  justify-content: space-between;
-  color: #aaa;
-  margin-bottom: 9px;
-}
-
-.total {
-  color: white;
-  font-size: 23px;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-.charge {
-  width: 100%;
-  padding: 16px;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 9px;
-  font-weight: bold;
-  font-size: 17px;
-}
-
-.clear {
-  width: 100%;
-  margin-top: 8px;
-  padding: 11px;
-  background: transparent;
-  color: #999;
-  border: 1px solid #333;
-  border-radius: 8px;
-}
-
-/* EDITOR */
-
-.editor {
-  max-width: 900px;
-}
-
-.editor-box {
-  background: #0e0e0e;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.field label {
-  color: #999;
-  font-size: 13px;
-}
-
-.field input,
-.field select {
-  background: #111;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.add-btn {
-  margin-top: 15px;
-  padding: 12px 18px;
-  background: white;
-  color: black;
-  border: 0;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
-.settings-btn {
-  background: #111;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 10px 14px;
-}
-
-/* HIDDEN */
-
-.hidden {
-  display: none;
-}
-
-/* MOBILE / IPAD */
-
-@media (max-width: 950px) {
-
-  .dashboard {
-    grid-template-columns: 1fr;
-  }
-
-  .cart {
-    min-height: 450px;
-  }
-
-}
-
-@media (max-width: 600px) {
-
-  header {
-    padding: 0 12px;
-  }
-
-  .brand-name {
-    font-size: 13px;
-  }
-
-  .nav {
-    overflow-x: auto;
-  }
-
-  .menu-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .search {
-    width: 100%;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-}
-</style>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Horizon & Brew POS</title>
+
+  <style>
+    :root {
+      --background: #080808;
+      --surface: #111111;
+      --surface-2: #181818;
+      --border: #2a2a2a;
+      --text: #ffffff;
+      --muted: #999999;
+      --accent: #ffffff;
+      --accent-text: #000000;
+      --radius: 12px;
+      --font: Arial, Helvetica, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--text);
+      font-family: var(--font);
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =========================
+       LOGIN SCREEN
+    ========================= */
+
+    #loginScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: var(--background);
+    }
+
+    .login-box {
+      width: min(420px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 35px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+
+      border: 2px solid var(--text);
+      border-radius: 50%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 30px;
+    }
+
+    .login-box h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 3px;
+    }
+
+    .login-subtitle {
+      color: var(--muted);
+      margin: 10px 0 28px;
+    }
+
+    .pin-display {
+      width: 100%;
+      height: 55px;
+
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+
+      color: var(--text);
+
+      font-size: 25px;
+      letter-spacing: 10px;
+
+      text-align: center;
+
+      margin-bottom: 18px;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 15px;
+
+      border: 0;
+      border-radius: var(--radius);
+
+      background: var(--accent);
+      color: var(--accent-text);
+
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .login-error {
+      min-height: 20px;
+      margin-top: 12px;
+      color: #ff6b6b;
+      font-size: 13px;
+    }
+
+    /* =========================
+       MAIN APP
+    ========================= */
+
+    #app {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 70px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 20px;
+
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+
+      border: 2px solid var(--text);
+      border-radius: 50%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-name {
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-button {
+      background: var(--surface-2);
+      color: var(--text);
+
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+
+      padding: 10px 14px;
+    }
+
+    .top-button:hover {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+
+    /* =========================
+       NAVIGATION
+    ========================= */
+
+    .navigation {
+      display: flex;
+      gap: 6px;
+
+      padding: 10px 15px;
+
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+
+      overflow-x: auto;
+    }
+
+    .nav-button {
+      white-space: nowrap;
+
+      padding: 11px 18px;
+
+      border: 0;
+      border-radius: var(--radius);
+
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+
+    /* =========================
+       PAGE
+    ========================= */
+
+    .page {
+      display: none;
+      padding: 20px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-title {
+      margin: 0 0 5px;
+      font-size: 27px;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      margin: 0 0 20px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 700px) {
+
+      .brand-name {
+        font-size: 13px;
+      }
+
+      .topbar {
+        padding: 0 12px;
+      }
+
+      .page {
+        padding: 14px;
+      }
+
+      .top-button {
+        padding: 9px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="app">
+  <!-- =========================
+       LOGIN
+  ========================= -->
 
-<header>
-  <div class="brand">
-    <div class="logo">✦</div>
-    <div class="brand-name">HORIZON & BREW</div>
+  <section id="loginScreen">
+
+    <div class="login-box">
+
+      <div class="login-logo">
+        ✦
+      </div>
+
+      <h1>HORIZON & BREW</h1>
+
+      <div class="login-subtitle">
+        Point of Sale
+      </div>
+
+      <input
+        id="pinInput"
+        class="pin-display"
+        type="password"
+        inputmode="numeric"
+        maxlength="6"
+        placeholder="••••••"
+      >
+
+      <button
+        class="login-button"
+        onclick="login()"
+      >
+        Unlock POS
+      </button>
+
+      <div
+        id="loginError"
+        class="login-error"
+      ></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       MAIN APPLICATION
+  ========================= -->
+
+  <div id="app">
+
+    <header class="topbar">
+
+      <div class="brand">
+
+        <div class="brand-logo">
+          ✦
+        </div>
+
+        <div class="brand-name">
+          HORIZON & BREW
+        </div>
+
+      </div>
+
+      <div class="top-actions">
+
+        <button
+          class="top-button"
+          onclick="lockPOS()"
+        >
+          🔒 Lock
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <nav class="navigation">
+
+      <button
+        class="nav-button active"
+        onclick="showPage('pos', this)"
+      >
+        🧾 POS
+      </button>
+
+      <button
+        class="nav-button"
+        onclick="showPage('menu', this)"
+      >
+        🥤 Menu
+      </button>
+
+      <button
+        class="nav-button"
+        onclick="showPage('goals', this)"
+      >
+        🎯 Goals
+      </button>
+
+      <button
+        class="nav-button"
+        onclick="showPage('reports', this)"
+      >
+        📊 Reports
+      </button>
+
+      <button
+        class="nav-button"
+        onclick="showPage('settings', this)"
+      >
+        ⚙️ Settings
+      </button>
+
+    </nav>
+
+
+    <!-- POS -->
+
+    <main
+      id="pos"
+      class="page active"
+    >
+
+      <h1 class="page-title">
+        Register
+      </h1>
+
+      <p class="page-subtitle">
+        Start a new order.
+      </p>
+
+      <div id="posContent"></div>
+
+    </main>
+
+
+    <!-- MENU -->
+
+    <main
+      id="menu"
+      class="page"
+    >
+
+      <h1 class="page-title">
+        Menu
+      </h1>
+
+      <p class="page-subtitle">
+        Customize your drinks.
+      </p>
+
+      <div id="menuContent"></div>
+
+    </main>
+
+
+    <!-- GOALS -->
+
+    <main
+      id="goals"
+      class="page"
+    >
+
+      <h1 class="page-title">
+        Goals
+      </h1>
+
+      <p class="page-subtitle">
+        Track your sales goals.
+      </p>
+
+      <div id="goalsContent"></div>
+
+    </main>
+
+
+    <!-- REPORTS -->
+
+    <main
+      id="reports"
+      class="page"
+    >
+
+      <h1 class="page-title">
+        Reports
+      </h1>
+
+      <p class="page-subtitle">
+        View your sales information.
+      </p>
+
+      <div id="reportsContent"></div>
+
+    </main>
+
+
+    <!-- SETTINGS -->
+
+    <main
+      id="settings"
+      class="page"
+    >
+
+      <h1 class="page-title">
+        Settings
+      </h1>
+
+      <p class="page-subtitle">
+        Customize Horizon & Brew POS.
+      </p>
+
+      <div id="settingsContent"></div>
+
+    </main>
+
   </div>
 
-  <div class="register">
-    ● REGISTER OPEN
-  </div>
-</header>
 
-<nav class="nav">
+  <script>
 
-  <button class="active" onclick="showPage('pos', this)">
-    POS
-  </button>
+    /* =========================
+       BASIC LOGIN
+    ========================= */
 
-  <button onclick="showPage('menu', this)">
-    Menu
-  </button>
+    const POS_PIN = "739421";
 
-  <button onclick="showPage('goals', this)">
-    Goals
-  </button>
+    function login() {
 
-</nav>
+      const enteredPIN =
+        document.getElementById("pinInput").value;
 
-<!-- POS PAGE -->
+      const error =
+        document.getElementById("loginError");
 
-<section id="pos" class="page">
+      if (enteredPIN === POS_PIN) {
 
-<div class="dashboard">
+        document.getElementById("loginScreen").style.display = "none";
 
-<div>
+        document.getElementById("app").style.display = "block";
 
-<div class="goal-card">
+        error.textContent = "";
 
-<div class="goal-top">
+        document.getElementById("pinInput").value = "";
 
-<div>
-<div class="goal-title">TODAY'S SALES GOAL</div>
-<div class="goal-number" id="goalText">$0 / $500</div>
-</div>
+      } else {
 
-<button class="goal-edit" onclick="changeGoal()">
-Edit Goal
-</button>
+        error.textContent =
+          "Incorrect PIN. Please try again.";
 
-</div>
+        document.getElementById("pinInput").value = "";
 
-<div class="progress">
-<div class="progress-bar" id="progressBar"></div>
-</div>
+      }
+    }
 
-<div class="goal-message" id="goalMessage">
-$500 remaining
-</div>
 
-</div>
+    function lockPOS() {
 
-<div class="menu-header">
+      document.getElementById("app").style.display = "none";
 
-<h2>Drinks</h2>
+      document.getElementById("loginScreen").style.display = "flex";
 
-<input
-id="search"
-class="search"
-placeholder="Search drinks..."
-oninput="renderDrinks()"
->
+      document.getElementById("pinInput").value = "";
 
-</div>
+    }
 
-<div class="categories">
 
-<button class="category active" onclick="setCategory('all',this)">
-All
-</button>
+    /* =========================
+       PAGE NAVIGATION
+    ========================= */
 
-<button class="category" onclick="setCategory('refreshers',this)">
-Refreshers
-</button>
+    function showPage(pageID, button) {
 
-<button class="category" onclick="setCategory('soda',this)">
-Soda
-</button>
+      document
+        .querySelectorAll(".page")
+        .forEach(page => {
+          page.classList.remove("active");
+        });
 
-<button class="category" onclick="setCategory('tea',this)">
-Tea
-</button>
+      document
+        .getElementById(pageID)
+        .classList.add("active");
 
-<button class="category" onclick="setCategory('special',this)">
-Specials
-</button>
+      document
+        .querySelectorAll(".nav-button")
+        .forEach(nav => {
+          nav.classList.remove("active");
+        });
 
-</div>
+      button.classList.add("active");
 
-<div class="drinks" id="drinks"></div>
+    }
 
-</div>
 
-<!-- CART -->
+    /* ENTER KEY FOR PIN */
 
-<aside class="cart">
+    document
+      .getElementById("pinInput")
+      .addEventListener("keydown", function(event) {
 
-<div class="cart-header">
-<h2>Current Order</h2>
-</div>
+        if (event.key === "Enter") {
+          login();
+        }
 
-<div class="cart-items" id="cartItems">
+      });
 
-<div class="empty">
-No drinks added.<br><br>
-Tap a drink to begin.
-</div>
-
-</div>
-
-<div class="cart-bottom">
-
-<div class="total-row">
-<span>Subtotal</span>
-<span id="subtotal">$0.00</span>
-</div>
-
-<div class="total-row">
-<span>Tax</span>
-<span id="tax">$0.00</span>
-</div>
-
-<div class="total-row total">
-<span>Total</span>
-<span id="total">$0.00</span>
-</div>
-
-<button class="charge" onclick="completeSale()">
-Charge
-</button>
-
-<button class="clear" onclick="clearCart()">
-Clear Order
-</button>
-
-</div>
-
-</aside>
-
-</div>
-
-</section>
-
-<!-- MENU EDITOR -->
-
-<section id="menu" class="page hidden">
-
-<div class="editor">
-
-<h2>Menu Manager</h2>
-
-<p style="color:#888;">
-Add, rename, price, or remove your drinks.
-</p>
-
-<div class="editor-box">
-
-<h3>Add a Drink</h3>
-
-<div class="form-grid">
-
-<div class="field">
-<label>Drink Name</label>
-<input id="newName" placeholder="Example: Galaxy Fizz">
-</div>
-
-<div class="field">
-<label>Price</label>
-<input id="newPrice" type="number" step="0.01" placeholder="4.50">
-</div>
-
-<div class="field">
-<label>Category</label>
-
-<select id="newCategory">
-
-<option value="refreshers">Refreshers</option>
-<option value="soda">Soda</option>
-<option value="tea">Tea</option>
-<option value="special">Specials</option>
-
-</select>
-
-</div>
-
-<div class="field">
-<label>Icon</label>
-<input id="newIcon" value="🥤">
-</div>
-
-</div>
-
-<button class="add-btn" onclick="addDrink()">
-+ Add Drink
-</button>
-
-</div>
-
-<div class="editor-box">
-
-<h3>Your Drinks</h3>
-
-<div id="editorList"></div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- GOALS -->
-
-<section id="goals" class="page hidden">
-
-<div class="editor">
-
-<h2>Goals</h2>
-
-<div class="editor-box">
-
-<h3>Daily Sales Goal</h3>
-
-<p style="color:#888;">
-Set the amount your business wants to sell today.
-</p>
-
-<div class="field">
-
-<label>Daily Goal</label>
-
-<input
-id="goalInput"
-type="number"
-step="1"
->
-
-</div>
-
-<button class="add-btn" onclick="saveGoal()">
-Save Goal
-</button>
-
-</div>
-
-<div class="editor-box">
-
-<h3>Today's Progress</h3>
-
-<div class="goal-number" id="goalStats">
-$0 / $500
-</div>
-
-<div class="progress">
-<div class="progress-bar" id="goalBar2"></div>
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-</div>
-
-<script>
-
-/* DATA */
-
-let drinks = JSON.parse(
-  localStorage.getItem("hb_drinks")
-) || [
-
-{
-name:"Cosmic Fizz",
-price:4.50,
-category:"soda",
-icon:"🥤"
-},
-
-{
-name:"Galaxy Lemonade",
-price:4.25,
-category:"refreshers",
-icon:"🍋"
-},
-
-{
-name:"Starlight Tea",
-price:3.75,
-category:"tea",
-icon:"🧋"
-},
-
-{
-name:"Orbit Orange",
-price:4.50,
-category:"refreshers",
-icon:"🍊"
-},
-
-{
-name:"Moonberry Splash",
-price:5.00,
-category:"refreshers",
-icon:"🫐"
-},
-
-{
-name:"Horizon Cola",
-price:3.50,
-category:"soda",
-icon:"🥤"
-},
-
-{
-name:"Nebula Punch",
-price:5.25,
-category:"special",
-icon:"🌌"
-}
-
-];
-
-let cart = [];
-
-let category = "all";
-
-let dailySales =
-Number(localStorage.getItem("hb_sales")) || 0;
-
-let goal =
-Number(localStorage.getItem("hb_goal")) || 500;
-
-const TAX = 0.07;
-
-
-/* NAVIGATION */
-
-function showPage(page, button) {
-
-document.querySelectorAll(".page")
-.forEach(p => p.classList.add("hidden"));
-
-document.getElementById(page)
-.classList.remove("hidden");
-
-document.querySelectorAll(".nav button")
-.forEach(b => b.classList.remove("active"));
-
-button.classList.add("active");
-
-if(page === "menu") {
-renderEditor();
-}
-
-if(page === "goals") {
-updateGoal();
-}
-
-}
-
-
-/* DRINK DISPLAY */
-
-function renderDrinks() {
-
-const container =
-document.getElementById("drinks");
-
-const search =
-document.getElementById("search")
-.value.toLowerCase();
-
-container.innerHTML = "";
-
-drinks
-.filter(d =>
-(category === "all" || d.category === category) &&
-d.name.toLowerCase().includes(search)
-)
-.forEach((drink,index) => {
-
-const card =
-document.createElement("div");
-
-card.className = "drink";
-
-card.innerHTML = `
-
-<div class="drink-icon">
-${drink.icon}
-</div>
-
-<div class="drink-name">
-${drink.name}
-</div>
-
-<div class="drink-category">
-${drink.category}
-</div>
-
-<div class="drink-price">
-$${drink.price.toFixed(2)}
-</div>
-
-`;
-
-card.onclick = () => addToCart(index);
-
-container.appendChild(card);
-
-});
-
-}
-
-
-/* CATEGORY */
-
-function setCategory(value, button) {
-
-category = value;
-
-document.querySelectorAll(".category")
-.forEach(b => b.classList.remove("active"));
-
-button.classList.add("active");
-
-renderDrinks();
-
-}
-
-
-/* CART */
-
-function addToCart(index) {
-
-const drink = drinks[index];
-
-const existing =
-cart.find(x => x.name === drink.name);
-
-if(existing) {
-existing.quantity++;
-}
-else {
-
-cart.push({
-...drink,
-quantity:1
-});
-
-}
-
-renderCart();
-
-}
-
-
-function changeQuantity(index, amount) {
-
-cart[index].quantity += amount;
-
-if(cart[index].quantity <= 0) {
-cart.splice(index,1);
-}
-
-renderCart();
-
-}
-
-
-function renderCart() {
-
-const container =
-document.getElementById("cartItems");
-
-if(cart.length === 0) {
-
-container.innerHTML = `
-<div class="empty">
-No drinks added.<br><br>
-Tap a drink to begin.
-</div>
-`;
-
-}
-else {
-
-container.innerHTML = "";
-
-cart.forEach((item,index) => {
-
-const div =
-document.createElement("div");
-
-div.className = "cart-item";
-
-div.innerHTML = `
-
-<div class="item-row">
-
-<strong>${item.name}</strong>
-
-<span>
-$${(item.price * item.quantity).toFixed(2)}
-</span>
-
-</div>
-
-<div class="quantity">
-
-<button onclick="changeQuantity(${index},-1)">
-−
-</button>
-
-<span>${item.quantity}</span>
-
-<button onclick="changeQuantity(${index},1)">
-+
-</button>
-
-</div>
-
-`;
-
-container.appendChild(div);
-
-});
-
-}
-
-calculateTotals();
-
-}
-
-
-function calculateTotals() {
-
-let subtotal = 0;
-
-cart.forEach(item => {
-
-subtotal +=
-item.price * item.quantity;
-
-});
-
-const tax =
-subtotal * TAX;
-
-const total =
-subtotal + tax;
-
-document.getElementById("subtotal")
-.textContent = "$" + subtotal.toFixed(2);
-
-document.getElementById("tax")
-.textContent = "$" + tax.toFixed(2);
-
-document.getElementById("total")
-.textContent = "$" + total.toFixed(2);
-
-}
-
-
-/* COMPLETE SALE */
-
-function completeSale() {
-
-if(cart.length === 0) {
-
-alert("Add a drink first.");
-
-return;
-
-}
-
-let subtotal = 0;
-
-cart.forEach(item => {
-
-subtotal +=
-item.price * item.quantity;
-
-});
-
-const total =
-subtotal + subtotal * TAX;
-
-dailySales += total;
-
-localStorage.setItem(
-"hb_sales",
-dailySales
-);
-
-alert(
-"Sale completed!\n\n" +
-"Total: $" +
-total.toFixed(2)
-);
-
-cart = [];
-
-renderCart();
-
-updateGoal();
-
-}
-
-
-/* CLEAR */
-
-function clearCart() {
-
-cart = [];
-
-renderCart();
-
-}
-
-
-/* MENU EDITOR */
-
-function addDrink() {
-
-const name =
-document.getElementById("newName").value.trim();
-
-const price =
-Number(document.getElementById("newPrice").value);
-
-const category =
-document.getElementById("newCategory").value;
-
-const icon =
-document.getElementById("newIcon").value || "🥤";
-
-if(!name || !price) {
-
-alert("Enter a drink name and price.");
-
-return;
-
-}
-
-drinks.push({
-name,
-price,
-category,
-icon
-});
-
-saveDrinks();
-
-document.getElementById("newName").value = "";
-
-document.getElementById("newPrice").value = "";
-
-document.getElementById("newIcon").value = "🥤";
-
-renderEditor();
-
-renderDrinks();
-
-}
-
-
-function renderEditor() {
-
-const list =
-document.getElementById("editorList");
-
-list.innerHTML = "";
-
-drinks.forEach((drink,index) => {
-
-const box =
-document.createElement("div");
-
-box.style.cssText =
-"padding:15px 0;border-bottom:1px solid #222;";
-
-box.innerHTML = `
-
-<div style="
-display:grid;
-grid-template-columns:50px 1fr 120px 120px;
-gap:10px;
-align-items:center;
-">
-
-<div style="font-size:25px">
-${drink.icon}
-</div>
-
-<input
-value="${drink.name}"
-id="name${index}"
-style="
-background:#111;
-color:white;
-border:1px solid #333;
-padding:10px;
-border-radius:7px;
-">
-
-<input
-value="${drink.price}"
-id="price${index}"
-type="number"
-step="0.01"
-style="
-background:#111;
-color:white;
-border:1px solid #333;
-padding:10px;
-border-radius:7px;
-">
-
-<button
-class="small-btn"
-onclick="saveDrink(${index})">
-Save
-</button>
-
-</div>
-
-<button
-class="small-btn"
-style="margin-top:8px;width:100%"
-onclick="deleteDrink(${index})">
-Delete ${drink.name}
-</button>
-
-`;
-
-list.appendChild(box);
-
-});
-
-}
-
-
-function saveDrink(index) {
-
-const name =
-document.getElementById("name"+index).value;
-
-const price =
-Number(document.getElementById("price"+index).value);
-
-drinks[index].name = name;
-
-drinks[index].price = price;
-
-saveDrinks();
-
-renderEditor();
-
-renderDrinks();
-
-}
-
-
-function deleteDrink(index) {
-
-if(
-confirm(
-"Delete " +
-drinks[index].name +
-"?"
-)
-) {
-
-drinks.splice(index,1);
-
-saveDrinks();
-
-renderEditor();
-
-renderDrinks();
-
-}
-
-}
-
-
-function saveDrinks() {
-
-localStorage.setItem(
-"hb_drinks",
-JSON.stringify(drinks)
-);
-
-}
-
-
-/* GOALS */
-
-function changeGoal() {
-
-const newGoal =
-prompt(
-"Enter today's sales goal:",
-goal
-);
-
-if(newGoal !== null) {
-
-goal =
-Number(newGoal);
-
-if(goal > 0) {
-
-saveGoalValue();
-
-}
-
-}
-
-}
-
-
-function saveGoal() {
-
-const value =
-Number(
-document.getElementById("goalInput").value
-);
-
-if(value > 0) {
-
-goal = value;
-
-saveGoalValue();
-
-alert("Goal saved!");
-
-}
-
-}
-
-
-function saveGoalValue() {
-
-localStorage.setItem(
-"hb_goal",
-goal
-);
-
-updateGoal();
-
-}
-
-
-function updateGoal() {
-
-const percent =
-Math.min(
-(dailySales / goal) * 100,
-100
-);
-
-document.getElementById("goalText")
-.textContent =
-"$" +
-dailySales.toFixed(2) +
-" / $" +
-goal.toFixed(2);
-
-document.getElementById("goalMessage")
-.textContent =
-dailySales >= goal
-? "🎉 Daily goal reached!"
-: "$" +
-Math.max(goal-dailySales,0).toFixed(2) +
-" remaining";
-
-document.getElementById("progressBar")
-.style.width =
-percent + "%";
-
-document.getElementById("goalStats")
-.textContent =
-"$" +
-dailySales.toFixed(2) +
-" / $" +
-goal.toFixed(2);
-
-document.getElementById("goalBar2")
-.style.width =
-percent + "%";
-
-document.getElementById("goalInput")
-.value =
-goal;
-
-}
-
-
-/* START */
-
-renderDrinks();
-
-renderCart();
-
-updateGoal();
-
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Horizon & Brew POS</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #050505;
-  color: #fff;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* HEADER */
-
-header {
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  border-bottom: 1px solid #292929;
-  background: #080808;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  width: 42px;
-  height: 42px;
-  border: 2px solid white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-}
-
-.brand-name {
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.register {
-  color: #aaa;
-  font-size: 13px;
-}
-
-/* NAV */
-
-.nav {
-  display: flex;
-  gap: 8px;
-  padding: 10px 20px;
-  border-bottom: 1px solid #292929;
-  background: #090909;
-}
-
-.nav button {
-  background: transparent;
-  color: #aaa;
-  border: 0;
-  padding: 11px 18px;
-  border-radius: 8px;
-}
-
-.nav button:hover,
-.nav button.active {
-  background: white;
-  color: black;
-}
-
-/* PAGE */
-
-.page {
-  padding: 22px;
-  flex: 1;
-}
-
-/* DASHBOARD */
-
-.dashboard {
-  display: grid;
-  grid-template-columns: 1fr 330px;
-  gap: 18px;
-}
-
-.goal-card {
-  background: #0e0e0e;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 18px;
-}
-
-.goal-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.goal-title {
-  font-size: 14px;
-  color: #aaa;
-}
-
-.goal-number {
-  font-size: 25px;
-  font-weight: bold;
-}
-
-.goal-edit {
-  background: transparent;
-  color: #aaa;
-  border: 1px solid #333;
-  border-radius: 7px;
-  padding: 7px 10px;
-}
-
-.goal-edit:hover {
-  color: white;
-  border-color: white;
-}
-
-.progress {
-  height: 12px;
-  background: #222;
-  border-radius: 20px;
-  margin-top: 15px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: white;
-  transition: width .3s;
-}
-
-.goal-message {
-  margin-top: 10px;
-  color: #999;
-  font-size: 13px;
-}
-
-/* MENU */
-
-.menu-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.menu-header h2 {
-  margin: 0;
-}
-
-.search {
-  width: 230px;
-  padding: 12px;
-  background: #111;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 9px;
-}
-
-.categories {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.category {
-  background: #111;
-  color: #aaa;
-  border: 1px solid #333;
-  padding: 10px 15px;
-  border-radius: 20px;
-}
-
-.category.active,
-.category:hover {
-  background: white;
-  color: black;
-}
-
-.drinks {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
-}
-
-.drink {
-  background: #0e0e0e;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  padding: 18px;
-  min-height: 155px;
-  transition: .15s;
-}
-
-.drink:hover {
-  border-color: white;
-  transform: translateY(-2px);
-}
-
-.drink-icon {
-  font-size: 35px;
-  margin-bottom: 12px;
-}
-
-.drink-name {
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.drink-category {
-  color: #777;
-  font-size: 12px;
-}
-
-.drink-price {
-  margin-top: 12px;
-  font-weight: bold;
-}
-
-.drink-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.small-btn {
-  flex: 1;
-  padding: 8px;
-  border-radius: 7px;
-  border: 1px solid #333;
-  background: #151515;
-  color: white;
-}
-
-.small-btn:hover {
-  background: white;
-  color: black;
-}
-
-/* CART */
-
-.cart {
-  background: #0b0b0b;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-}
-
-.cart-header {
-  padding: 20px;
-  border-bottom: 1px solid #292929;
-}
-
-.cart-header h2 {
-  margin: 0;
-}
-
-.cart-items {
-  flex: 1;
-  padding: 15px;
-  overflow-y: auto;
-}
-
-.empty {
-  text-align: center;
-  color: #666;
-  margin-top: 60px;
-}
-
-.cart-item {
-  padding: 13px 0;
-  border-bottom: 1px solid #222;
-}
-
-.item-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.quantity {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.quantity button {
-  width: 30px;
-  height: 30px;
-  background: #171717;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 6px;
-}
-
-.cart-bottom {
-  padding: 18px;
-  border-top: 1px solid #292929;
-}
-
-.total-row {
-  display: flex;
-  justify-content: space-between;
-  color: #aaa;
-  margin-bottom: 9px;
-}
-
-.total {
-  color: white;
-  font-size: 23px;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-.charge {
-  width: 100%;
-  padding: 16px;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 9px;
-  font-weight: bold;
-  font-size: 17px;
-}
-
-.clear {
-  width: 100%;
-  margin-top: 8px;
-  padding: 11px;
-  background: transparent;
-  color: #999;
-  border: 1px solid #333;
-  border-radius: 8px;
-}
-
-/* EDITOR */
-
-.editor {
-  max-width: 900px;
-}
-
-.editor-box {
-  background: #0e0e0e;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.field label {
-  color: #999;
-  font-size: 13px;
-}
-
-.field input,
-.field select {
-  background: #111;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.add-btn {
-  margin-top: 15px;
-  padding: 12px 18px;
-  background: white;
-  color: black;
-  border: 0;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
-.settings-btn {
-  background: #111;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 10px 14px;
-}
-
-/* HIDDEN */
-
-.hidden {
-  display: none;
-}
-
-/* MOBILE / IPAD */
-
-@media (max-width: 950px) {
-
-  .dashboard {
-    grid-template-columns: 1fr;
-  }
-
-  .cart {
-    min-height: 450px;
-  }
-
-}
-
-@media (max-width: 600px) {
-
-  header {
-    padding: 0 12px;
-  }
-
-  .brand-name {
-    font-size: 13px;
-  }
-
-  .nav {
-    overflow-x: auto;
-  }
-
-  .menu-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .search {
-    width: 100%;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-<header>
-  <div class="brand">
-    <div class="logo">✦</div>
-    <div class="brand-name">HORIZON & BREW</div>
-  </div>
-
-  <div class="register">
-    ● REGISTER OPEN
-  </div>
-</header>
-
-<nav class="nav">
-
-  <button class="active" onclick="showPage('pos', this)">
-    POS
-  </button>
-
-  <button onclick="showPage('menu', this)">
-    Menu
-  </button>
-
-  <button onclick="showPage('goals', this)">
-    Goals
-  </button>
-
-</nav>
-
-<!-- POS PAGE -->
-
-<section id="pos" class="page">
-
-<div class="dashboard">
-
-<div>
-
-<div class="goal-card">
-
-<div class="goal-top">
-
-<div>
-<div class="goal-title">TODAY'S SALES GOAL</div>
-<div class="goal-number" id="goalText">$0 / $500</div>
-</div>
-
-<button class="goal-edit" onclick="changeGoal()">
-Edit Goal
-</button>
-
-</div>
-
-<div class="progress">
-<div class="progress-bar" id="progressBar"></div>
-</div>
-
-<div class="goal-message" id="goalMessage">
-$500 remaining
-</div>
-
-</div>
-
-<div class="menu-header">
-
-<h2>Drinks</h2>
-
-<input
-id="search"
-class="search"
-placeholder="Search drinks..."
-oninput="renderDrinks()"
->
-
-</div>
-
-<div class="categories">
-
-<button class="category active" onclick="setCategory('all',this)">
-All
-</button>
-
-<button class="category" onclick="setCategory('refreshers',this)">
-Refreshers
-</button>
-
-<button class="category" onclick="setCategory('soda',this)">
-Soda
-</button>
-
-<button class="category" onclick="setCategory('tea',this)">
-Tea
-</button>
-
-<button class="category" onclick="setCategory('special',this)">
-Specials
-</button>
-
-</div>
-
-<div class="drinks" id="drinks"></div>
-
-</div>
-
-<!-- CART -->
-
-<aside class="cart">
-
-<div class="cart-header">
-<h2>Current Order</h2>
-</div>
-
-<div class="cart-items" id="cartItems">
-
-<div class="empty">
-No drinks added.<br><br>
-Tap a drink to begin.
-</div>
-
-</div>
-
-<div class="cart-bottom">
-
-<div class="total-row">
-<span>Subtotal</span>
-<span id="subtotal">$0.00</span>
-</div>
-
-<div class="total-row">
-<span>Tax</span>
-<span id="tax">$0.00</span>
-</div>
-
-<div class="total-row total">
-<span>Total</span>
-<span id="total">$0.00</span>
-</div>
-
-<button class="charge" onclick="completeSale()">
-Charge
-</button>
-
-<button class="clear" onclick="clearCart()">
-Clear Order
-</button>
-
-</div>
-
-</aside>
-
-</div>
-
-</section>
-
-<!-- MENU EDITOR -->
-
-<section id="menu" class="page hidden">
-
-<div class="editor">
-
-<h2>Menu Manager</h2>
-
-<p style="color:#888;">
-Add, rename, price, or remove your drinks.
-</p>
-
-<div class="editor-box">
-
-<h3>Add a Drink</h3>
-
-<div class="form-grid">
-
-<div class="field">
-<label>Drink Name</label>
-<input id="newName" placeholder="Example: Galaxy Fizz">
-</div>
-
-<div class="field">
-<label>Price</label>
-<input id="newPrice" type="number" step="0.01" placeholder="4.50">
-</div>
-
-<div class="field">
-<label>Category</label>
-
-<select id="newCategory">
-
-<option value="refreshers">Refreshers</option>
-<option value="soda">Soda</option>
-<option value="tea">Tea</option>
-<option value="special">Specials</option>
-
-</select>
-
-</div>
-
-<div class="field">
-<label>Icon</label>
-<input id="newIcon" value="🥤">
-</div>
-
-</div>
-
-<button class="add-btn" onclick="addDrink()">
-+ Add Drink
-</button>
-
-</div>
-
-<div class="editor-box">
-
-<h3>Your Drinks</h3>
-
-<div id="editorList"></div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- GOALS -->
-
-<section id="goals" class="page hidden">
-
-<div class="editor">
-
-<h2>Goals</h2>
-
-<div class="editor-box">
-
-<h3>Daily Sales Goal</h3>
-
-<p style="color:#888;">
-Set the amount your business wants to sell today.
-</p>
-
-<div class="field">
-
-<label>Daily Goal</label>
-
-<input
-id="goalInput"
-type="number"
-step="1"
->
-
-</div>
-
-<button class="add-btn" onclick="saveGoal()">
-Save Goal
-</button>
-
-</div>
-
-<div class="editor-box">
-
-<h3>Today's Progress</h3>
-
-<div class="goal-number" id="goalStats">
-$0 / $500
-</div>
-
-<div class="progress">
-<div class="progress-bar" id="goalBar2"></div>
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-</div>
-
-<script>
-
-/* DATA */
-
-let drinks = JSON.parse(
-  localStorage.getItem("hb_drinks")
-) || [
-
-{
-name:"Cosmic Fizz",
-price:4.50,
-category:"soda",
-icon:"🥤"
-},
-
-{
-name:"Galaxy Lemonade",
-price:4.25,
-category:"refreshers",
-icon:"🍋"
-},
-
-{
-name:"Starlight Tea",
-price:3.75,
-category:"tea",
-icon:"🧋"
-},
-
-{
-name:"Orbit Orange",
-price:4.50,
-category:"refreshers",
-icon:"🍊"
-},
-
-{
-name:"Moonberry Splash",
-price:5.00,
-category:"refreshers",
-icon:"🫐"
-},
-
-{
-name:"Horizon Cola",
-price:3.50,
-category:"soda",
-icon:"🥤"
-},
-
-{
-name:"Nebula Punch",
-price:5.25,
-category:"special",
-icon:"🌌"
-}
-
-];
-
-let cart = [];
-
-let category = "all";
-
-let dailySales =
-Number(localStorage.getItem("hb_sales")) || 0;
-
-let goal =
-Number(localStorage.getItem("hb_goal")) || 500;
-
-const TAX = 0.07;
-
-
-/* NAVIGATION */
-
-function showPage(page, button) {
-
-document.querySelectorAll(".page")
-.forEach(p => p.classList.add("hidden"));
-
-document.getElementById(page)
-.classList.remove("hidden");
-
-document.querySelectorAll(".nav button")
-.forEach(b => b.classList.remove("active"));
-
-button.classList.add("active");
-
-if(page === "menu") {
-renderEditor();
-}
-
-if(page === "goals") {
-updateGoal();
-}
-
-}
-
-
-/* DRINK DISPLAY */
-
-function renderDrinks() {
-
-const container =
-document.getElementById("drinks");
-
-const search =
-document.getElementById("search")
-.value.toLowerCase();
-
-container.innerHTML = "";
-
-drinks
-.filter(d =>
-(category === "all" || d.category === category) &&
-d.name.toLowerCase().includes(search)
-)
-.forEach((drink,index) => {
-
-const card =
-document.createElement("div");
-
-card.className = "drink";
-
-card.innerHTML = `
-
-<div class="drink-icon">
-${drink.icon}
-</div>
-
-<div class="drink-name">
-${drink.name}
-</div>
-
-<div class="drink-category">
-${drink.category}
-</div>
-
-<div class="drink-price">
-$${drink.price.toFixed(2)}
-</div>
-
-`;
-
-card.onclick = () => addToCart(index);
-
-container.appendChild(card);
-
-});
-
-}
-
-
-/* CATEGORY */
-
-function setCategory(value, button) {
-
-category = value;
-
-document.querySelectorAll(".category")
-.forEach(b => b.classList.remove("active"));
-
-button.classList.add("active");
-
-renderDrinks();
-
-}
-
-
-/* CART */
-
-function addToCart(index) {
-
-const drink = drinks[index];
-
-const existing =
-cart.find(x => x.name === drink.name);
-
-if(existing) {
-existing.quantity++;
-}
-else {
-
-cart.push({
-...drink,
-quantity:1
-});
-
-}
-
-renderCart();
-
-}
-
-
-function changeQuantity(index, amount) {
-
-cart[index].quantity += amount;
-
-if(cart[index].quantity <= 0) {
-cart.splice(index,1);
-}
-
-renderCart();
-
-}
-
-
-function renderCart() {
-
-const container =
-document.getElementById("cartItems");
-
-if(cart.length === 0) {
-
-container.innerHTML = `
-<div class="empty">
-No drinks added.<br><br>
-Tap a drink to begin.
-</div>
-`;
-
-}
-else {
-
-container.innerHTML = "";
-
-cart.forEach((item,index) => {
-
-const div =
-document.createElement("div");
-
-div.className = "cart-item";
-
-div.innerHTML = `
-
-<div class="item-row">
-
-<strong>${item.name}</strong>
-
-<span>
-$${(item.price * item.quantity).toFixed(2)}
-</span>
-
-</div>
-
-<div class="quantity">
-
-<button onclick="changeQuantity(${index},-1)">
-−
-</button>
-
-<span>${item.quantity}</span>
-
-<button onclick="changeQuantity(${index},1)">
-+
-</button>
-
-</div>
-
-`;
-
-container.appendChild(div);
-
-});
-
-}
-
-calculateTotals();
-
-}
-
-
-function calculateTotals() {
-
-let subtotal = 0;
-
-cart.forEach(item => {
-
-subtotal +=
-item.price * item.quantity;
-
-});
-
-const tax =
-subtotal * TAX;
-
-const total =
-subtotal + tax;
-
-document.getElementById("subtotal")
-.textContent = "$" + subtotal.toFixed(2);
-
-document.getElementById("tax")
-.textContent = "$" + tax.toFixed(2);
-
-document.getElementById("total")
-.textContent = "$" + total.toFixed(2);
-
-}
-
-
-/* COMPLETE SALE */
-
-function completeSale() {
-
-if(cart.length === 0) {
-
-alert("Add a drink first.");
-
-return;
-
-}
-
-let subtotal = 0;
-
-cart.forEach(item => {
-
-subtotal +=
-item.price * item.quantity;
-
-});
-
-const total =
-subtotal + subtotal * TAX;
-
-dailySales += total;
-
-localStorage.setItem(
-"hb_sales",
-dailySales
-);
-
-alert(
-"Sale completed!\n\n" +
-"Total: $" +
-total.toFixed(2)
-);
-
-cart = [];
-
-renderCart();
-
-updateGoal();
-
-}
-
-
-/* CLEAR */
-
-function clearCart() {
-
-cart = [];
-
-renderCart();
-
-}
-
-
-/* MENU EDITOR */
-
-function addDrink() {
-
-const name =
-document.getElementById("newName").value.trim();
-
-const price =
-Number(document.getElementById("newPrice").value);
-
-const category =
-document.getElementById("newCategory").value;
-
-const icon =
-document.getElementById("newIcon").value || "🥤";
-
-if(!name || !price) {
-
-alert("Enter a drink name and price.");
-
-return;
-
-}
-
-drinks.push({
-name,
-price,
-category,
-icon
-});
-
-saveDrinks();
-
-document.getElementById("newName").value = "";
-
-document.getElementById("newPrice").value = "";
-
-document.getElementById("newIcon").value = "🥤";
-
-renderEditor();
-
-renderDrinks();
-
-}
-
-
-function renderEditor() {
-
-const list =
-document.getElementById("editorList");
-
-list.innerHTML = "";
-
-drinks.forEach((drink,index) => {
-
-const box =
-document.createElement("div");
-
-box.style.cssText =
-"padding:15px 0;border-bottom:1px solid #222;";
-
-box.innerHTML = `
-
-<div style="
-display:grid;
-grid-template-columns:50px 1fr 120px 120px;
-gap:10px;
-align-items:center;
-">
-
-<div style="font-size:25px">
-${drink.icon}
-</div>
-
-<input
-value="${drink.name}"
-id="name${index}"
-style="
-background:#111;
-color:white;
-border:1px solid #333;
-padding:10px;
-border-radius:7px;
-">
-
-<input
-value="${drink.price}"
-id="price${index}"
-type="number"
-step="0.01"
-style="
-background:#111;
-color:white;
-border:1px solid #333;
-padding:10px;
-border-radius:7px;
-">
-
-<button
-class="small-btn"
-onclick="saveDrink(${index})">
-Save
-</button>
-
-</div>
-
-<button
-class="small-btn"
-style="margin-top:8px;width:100%"
-onclick="deleteDrink(${index})">
-Delete ${drink.name}
-</button>
-
-`;
-
-list.appendChild(box);
-
-});
-
-}
-
-
-function saveDrink(index) {
-
-const name =
-document.getElementById("name"+index).value;
-
-const price =
-Number(document.getElementById("price"+index).value);
-
-drinks[index].name = name;
-
-drinks[index].price = price;
-
-saveDrinks();
-
-renderEditor();
-
-renderDrinks();
-
-}
-
-
-function deleteDrink(index) {
-
-if(
-confirm(
-"Delete " +
-drinks[index].name +
-"?"
-)
-) {
-
-drinks.splice(index,1);
-
-saveDrinks();
-
-renderEditor();
-
-renderDrinks();
-
-}
-
-}
-
-
-function saveDrinks() {
-
-localStorage.setItem(
-"hb_drinks",
-JSON.stringify(drinks)
-);
-
-}
-
-
-/* GOALS */
-
-function changeGoal() {
-
-const newGoal =
-prompt(
-"Enter today's sales goal:",
-goal
-);
-
-if(newGoal !== null) {
-
-goal =
-Number(newGoal);
-
-if(goal > 0) {
-
-saveGoalValue();
-
-}
-
-}
-
-}
-
-
-function saveGoal() {
-
-const value =
-Number(
-document.getElementById("goalInput").value
-);
-
-if(value > 0) {
-
-goal = value;
-
-saveGoalValue();
-
-alert("Goal saved!");
-
-}
-
-}
-
-
-function saveGoalValue() {
-
-localStorage.setItem(
-"hb_goal",
-goal
-);
-
-updateGoal();
-
-}
-
-
-function updateGoal() {
-
-const percent =
-Math.min(
-(dailySales / goal) * 100,
-100
-);
-
-document.getElementById("goalText")
-.textContent =
-"$" +
-dailySales.toFixed(2) +
-" / $" +
-goal.toFixed(2);
-
-document.getElementById("goalMessage")
-.textContent =
-dailySales >= goal
-? "🎉 Daily goal reached!"
-: "$" +
-Math.max(goal-dailySales,0).toFixed(2) +
-" remaining";
-
-document.getElementById("progressBar")
-.style.width =
-percent + "%";
-
-document.getElementById("goalStats")
-.textContent =
-"$" +
-dailySales.toFixed(2) +
-" / $" +
-goal.toFixed(2);
-
-document.getElementById("goalBar2")
-.style.width =
-percent + "%";
-
-document.getElementById("goalInput")
-.value =
-goal;
-
-}
-
-
-/* START */
-
-renderDrinks();
-
-renderCart();
-
-updateGoal();
-
-</script>
-
-</body>
-</html>
+  </script>
 
 </body>
 </html>
