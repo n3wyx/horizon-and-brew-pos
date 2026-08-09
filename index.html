@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horizon & Brew POS</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #050505;
+      color: white;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      border-bottom: 1px solid #2a2a2a;
+      background: #080808;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 45px;
+      height: 45px;
+      border: 2px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: 3px;
+    }
+
+    .status {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    /* MAIN */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      min-height: calc(100vh - 80px);
+    }
+
+    .menu {
+      padding: 28px;
+      overflow-y: auto;
+    }
+
+    .menu-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .menu-top h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .search {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: white;
+      width: 230px;
+      outline: none;
+    }
+
+    .categories {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .category {
+      background: #111;
+      border: 1px solid #333;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .category.active,
+    .category:hover {
+      background: white;
+      color: black;
+    }
+
+    /* DRINK GRID */
+    .drinks {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 16px;
+    }
+
+    .drink {
+      background: #0d0d0d;
+      border: 1px solid #292929;
+      border-radius: 16px;
+      padding: 20px;
+      min-height: 170px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .drink:hover {
+      transform: translateY(-3px);
+      border-color: white;
+      background: #151515;
+    }
+
+    .drink-icon {
+      font-size: 42px;
+      margin-bottom: 18px;
+    }
+
+    .drink h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .drink p {
+      margin: 0;
+      color: #999;
+      font-size: 13px;
+    }
+
+    .price {
+      margin-top: 14px;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    /* CART */
+    .cart {
+      background: #0b0b0b;
+      border-left: 1px solid #292929;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-header {
+      padding: 25px;
+      border-bottom: 1px solid #292929;
+    }
+
+    .cart-header h2 {
+      margin: 0;
+    }
+
+    .order-number {
+      color: #888;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .cart-items {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .empty {
+      text-align: center;
+      color: #666;
+      margin-top: 70px;
+    }
+
+    .cart-item {
+      border-bottom: 1px solid #222;
+      padding: 14px 0;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .item-name {
+      font-weight: bold;
+    }
+
+    .item-price {
+      color: #ccc;
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .quantity button {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #444;
+      background: #161616;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .quantity button:hover {
+      background: white;
+      color: black;
+    }
+
+    .cart-bottom {
+      padding: 22px;
+      border-top: 1px solid #292929;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: #aaa;
+    }
+
+    .total {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 15px 0 20px;
+    }
+
+    .checkout {
+      width: 100%;
+      padding: 17px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: black;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .checkout:hover {
+      background: #ddd;
+    }
+
+    .clear {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid #333;
+      color: #aaa;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 850px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .cart {
+        border-left: none;
+        border-top: 1px solid #292929;
+        min-height: 400px;
+      }
+
+      .menu-top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+      }
+
+      .search {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="logo">✦</div>
+      <h1>HORIZON & BREW</h1>
+    </div>
+
+    <div class="status">
+      ● REGISTER OPEN
+    </div>
+  </header>
+
+  <main>
+
+    <!-- MENU -->
+    <section class="menu">
+
+      <div class="menu-top">
+        <h2>Menu</h2>
+
+        <input
+          class="search"
+          id="search"
+          placeholder="Search drinks..."
+          oninput="searchDrinks()"
+        >
+      </div>
+
+      <div class="categories">
+        <button class="category active" onclick="filterCategory('all', this)">All</button>
+        <button class="category" onclick="filterCategory('refreshers', this)">Refreshers</button>
+        <button class="category" onclick="filterCategory('soda', this)">Soda</button>
+        <button class="category" onclick="filterCategory('tea', this)">Tea</button>
+        <button class="category" onclick="filterCategory('special', this)">Specials</button>
+      </div>
+
+      <div class="drinks" id="drinks"></div>
+
+    </section>
+
+    <!-- CART -->
+    <aside class="cart">
+
+      <div class="cart-header">
+        <h2>Current Order</h2>
+        <div class="order-number" id="orderNumber"></div>
+      </div>
+
+      <div class="cart-items" id="cartItems">
+        <div class="empty">
+          No drinks added yet.<br><br>
+          Tap a drink to start an order.
+        </div>
+      </div>
+
+      <div class="cart-bottom">
+
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+
+        <div class="total-row">
+          <span>Tax</span>
+          <span id="tax">$0.00</span>
+        </div>
+
+        <div class="total-row total">
+          <span>Total</span>
+          <span id="total">$0.00</span>
+        </div>
+
+        <button class="checkout" onclick="checkout()">
+          Complete Sale
+        </button>
+
+        <button class="clear" onclick="clearCart()">
+          Clear Order
+        </button>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+</div>
+
+<script>
+
+const drinks = [
+  {
+    name: "Cosmic Fizz",
+    price: 4.50,
+    category: "soda",
+    icon: "🥤"
+  },
+  {
+    name: "Galaxy Lemonade",
+    price: 4.25,
+    category: "refreshers",
+    icon: "🍋"
+  },
+  {
+    name: "Starlight Tea",
+    price: 3.75,
+    category: "tea",
+    icon: "🧋"
+  },
+  {
+    name: "Orbit Orange",
+    price: 4.50,
+    category: "refreshers",
+    icon: "🍊"
+  },
+  {
+    name: "Moonberry Splash",
+    price: 5.00,
+    category: "refreshers",
+    icon: "🫐"
+  },
+  {
+    name: "Horizon Cola",
+    price: 3.50,
+    category: "soda",
+    icon: "🥤"
+  },
+  {
+    name: "Nebula Punch",
+    price: 5.25,
+    category: "special",
+    icon: "🌌"
+  },
+  {
+    name: "Meteor Melon",
+    price: 4.75,
+    category: "special",
+    icon: "🍉"
+  }
+];
+
+let cart = [];
+let currentCategory = "all";
+
+const TAX_RATE = 0.07;
+
+function displayDrinks(list = drinks) {
+
+  const container = document.getElementById("drinks");
+
+  container.innerHTML = "";
+
+  list.forEach((drink, index) => {
+
+    const card = document.createElement("div");
+
+    card.className = "drink";
+
+    card.innerHTML = `
+      <div class="drink-icon">${drink.icon}</div>
+      <h3>${drink.name}</h3>
+      <p>${drink.category}</p>
+      <div class="price">$${drink.price.toFixed(2)}</div>
+    `;
+
+    card.onclick = () => addToCart(index);
+
+    container.appendChild(card);
+
+  });
+}
+
+function addToCart(index) {
+
+  const drink = drinks[index];
+
+  const existing = cart.find(item => item.name === drink.name);
+
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({
+      ...drink,
+      quantity: 1
+    });
+  }
+
+  updateCart();
+}
+
+function updateCart() {
+
+  const container = document.getElementById("cartItems");
+
+  if (cart.length === 0) {
+
+    container.innerHTML = `
+      <div class="empty">
+        No drinks added yet.<br><br>
+        Tap a drink to start an order.
+      </div>
+    `;
+
+  } else {
+
+    container.innerHTML = "";
+
+    cart.forEach((item, index) => {
+
+      const element = document.createElement("div");
+
+      element.className = "cart-item";
+
+      element.innerHTML = `
+        <div class="item-row">
+          <div class="item-name">${item.name}</div>
+          <div class="item-price">
+            $${(item.price * item.quantity).toFixed(2)}
+          </div>
+        </div>
+
+        <div class="quantity">
+          <button onclick="changeQuantity(${index}, -1)">−</button>
+
+          <span>${item.quantity}</span>
+
+          <button onclick="changeQuantity(${index}, 1)">+</button>
+        </div>
+      `;
+
+      container.appendChild(element);
+
+    });
+
+  }
+
+  calculateTotals();
+}
+
+function changeQuantity(index, amount) {
+
+  cart[index].quantity += amount;
+
+  if (cart[index].quantity <= 0) {
+    cart.splice(index, 1);
+  }
+
+  updateCart();
+}
+
+function calculateTotals() {
+
+  let subtotal = 0;
+
+  cart.forEach(item => {
+    subtotal += item.price * item.quantity;
+  });
+
+  const tax = subtotal * TAX_RATE;
+
+  const total = subtotal + tax;
+
+  document.getElementById("subtotal").textContent =
+    `$${subtotal.toFixed(2)}`;
+
+  document.getElementById("tax").textContent =
+    `$${tax.toFixed(2)}`;
+
+  document.getElementById("total").textContent =
+    `$${total.toFixed(2)}`;
+}
+
+function clearCart() {
+
+  cart = [];
+
+  updateCart();
+}
+
+function checkout() {
+
+  if (cart.length === 0) {
+
+    alert("Add a drink before completing the sale.");
+
+    return;
+  }
+
+  const total = document.getElementById("total").textContent;
+
+  alert(`Sale completed!\n\nTotal: ${total}`);
+
+  clearCart();
+
+}
+
+function filterCategory(category, button) {
+
+  currentCategory = category;
+
+  document.querySelectorAll(".category").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  if (category === "all") {
+
+    displayDrinks(drinks);
+
+  } else {
+
+    displayDrinks(
+      drinks.filter(drink => drink.category === category)
+    );
+
+  }
+}
+
+function searchDrinks() {
+
+  const search = document
+    .getElementById("search")
+    .value
+    .toLowerCase();
+
+  let results = drinks.filter(drink =>
+    drink.name.toLowerCase().includes(search)
+  );
+
+  if (currentCategory !== "all") {
+
+    results = results.filter(drink =>
+      drink.category === currentCategory
+    );
+
+  }
+
+  displayDrinks(results);
+}
+
+function generateOrderNumber() {
+
+  const number = Math.floor(
+    1000 + Math.random() * 9000
+  );
+
+  document.getElementById("orderNumber").textContent =
+    `Order #${number}`;
+
+}
+
+displayDrinks();
+generateOrderNumber();
+updateCart();
+
+</script>
+
+</body>
+</html>
