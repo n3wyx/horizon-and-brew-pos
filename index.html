@@ -1324,6 +1324,141 @@
 
   function chargeOrder() {
 
+  if (posOrder.length === 0) {
+
+    alert("Add a drink to the order first.");
+
+    return;
+  }
+
+  let subtotal = 0;
+
+  posOrder.forEach(item => {
+
+    subtotal +=
+      Number(item.price) *
+      Number(item.quantity);
+
+  });
+
+  // Round everything to real currency cents
+  subtotal = Math.round(subtotal * 100) / 100;
+
+
+  const taxRate =
+    Number(
+      localStorage.getItem("hb_tax")
+    ) || 0.07;
+
+
+  let tax =
+    subtotal * taxRate;
+
+  tax = Math.round(tax * 100) / 100;
+
+
+  let total =
+    subtotal + tax;
+
+  total = Math.round(total * 100) / 100;
+
+
+  const payment =
+    prompt(
+      "Payment amount received:\n\n$" +
+      total.toFixed(2)
+    );
+
+
+  if (payment === null) return;
+
+
+  // Convert the payment to cents
+  const paymentCents =
+    Math.round(Number(payment) * 100);
+
+  const totalCents =
+    Math.round(total * 100);
+
+
+  if (
+    Number.isNaN(paymentCents) ||
+    paymentCents < totalCents
+  ) {
+
+    alert(
+      "Payment is not enough.\n\n" +
+      "Amount due: $" +
+      total.toFixed(2)
+    );
+
+    return;
+
+  }
+
+
+  const changeCents =
+    paymentCents - totalCents;
+
+
+  const change =
+    changeCents / 100;
+
+
+  /* SAVE SALES */
+
+  const oldSales =
+    Number(
+      localStorage.getItem("hb_sales")
+    ) || 0;
+
+
+  localStorage.setItem(
+    "hb_sales",
+    (
+      oldSales + total
+    ).toFixed(2)
+  );
+
+
+  /* SAVE ORDER NUMBER */
+
+  orderNumber++;
+
+  localStorage.setItem(
+    "hb_order_number",
+    orderNumber
+  );
+
+
+  alert(
+    "Payment complete!\n\n" +
+
+    "Total: $" +
+    total.toFixed(2) +
+
+    "\nReceived: $" +
+    (paymentCents / 100).toFixed(2) +
+
+    "\nChange: $" +
+    change.toFixed(2)
+  );
+
+
+  posOrder = [];
+
+
+  document.getElementById(
+    "orderNumber"
+  ).textContent =
+    "Order #" +
+    String(orderNumber)
+      .padStart(3, "0");
+
+
+  renderOrder();
+
+}
     if (posOrder.length === 0) {
 
       alert(
